@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+requests
+yfinance
+pandas
+undetected-chromedriver
+selenium
+setuptools
