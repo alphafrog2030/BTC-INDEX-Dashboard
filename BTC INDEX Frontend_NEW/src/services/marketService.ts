@@ -171,8 +171,8 @@ export const generateKoreanAnalysis = (
     strategyText += `- **관망 및 소액 적립**: 무리한 베팅보다는 시장의 방향성이 결정될 때까지 관망하거나, 소액으로 꾸준히 모아가는 전략이 유효합니다.\n\n`;
   }
 
-  strategyText += `\n---\n\n`;
-  strategyText += `# 🔍 상세 지표 분석 (Detailed Breakdown)\n\n`;
+  let breakdownText = `\n---\n\n`;
+  breakdownText += `# 🔍 상세 지표 분석 (Detailed Breakdown)\n\n`;
 
   // MVRV Analysis
   if (mvrv) {
@@ -210,69 +210,69 @@ export const generateKoreanAnalysis = (
   if (puell) {
     strategyText += `### 3. Puell Multiple (현재: ${fmt(puell.currentValue)})\n\n`;
     if (puell.score >= 8) {
-      strategyText += `- **상태**: 🟢 **채굴자 항복 (Miner Capitulation)**\n`;
-      strategyText += `- **해석**: 채굴 수익성이 낮아 채굴자들이 코인을 팔지 못하거나 운영을 중단하는 바닥 신호입니다.\n`;
+      breakdownText += `- **상태**: 🟢 **채굴자 항복 (Miner Capitulation)**\n`;
+      breakdownText += `- **해석**: 채굴 수익성이 낮아 채굴자들이 코인을 팔지 못하거나 운영을 중단하는 바닥 신호입니다.\n`;
     } else if (puell.score <= 2) {
-      strategyText += `- **상태**: 🔴 **채굴자 수익 극대화**\n`;
-      strategyText += `- **해석**: 채굴 수익이 높아 채굴자들이 시장에 물량을 쏟아낼 수 있습니다.\n`;
+      breakdownText += `- **상태**: 🔴 **채굴자 수익 극대화**\n`;
+      breakdownText += `- **해석**: 채굴 수익이 높아 채굴자들이 시장에 물량을 쏟아낼 수 있습니다.\n`;
     } else {
-      strategyText += `- **상태**: 🟡 **안정적**\n`;
-      strategyText += `- **해석**: 채굴자들의 매도 압력이 평이한 수준입니다.\n`;
+      breakdownText += `- **상태**: 🟡 **안정적**\n`;
+      breakdownText += `- **해석**: 채굴자들의 매도 압력이 평이한 수준입니다.\n`;
     }
-    strategyText += `\n`;
+    breakdownText += `\n`;
   }
 
   // 200 Week MA Analysis
   if (ma200) {
-    strategyText += `### 4. 200 Week MA (현재: ${fmt(ma200.currentValue)})\n\n`;
-    strategyText += `- **상태**: ${ma200.score >= 7 ? '🟢 지지선 근접 (Near Support)' : '🟡 추세 지속'}\n`;
-    strategyText += `- **해석**: 비트코인의 장기적인 바닥 지지선입니다. 현재 가격이 이 선에 가까울수록 강력한 매수 기회입니다.\n`;
-    strategyText += `\n`;
+    breakdownText += `### 4. 200 Week MA (현재: ${fmt(ma200.currentValue)})\n\n`;
+    breakdownText += `- **상태**: ${ma200.score >= 7 ? '🟢 지지선 근접 (Near Support)' : '🟡 추세 지속'}\n`;
+    breakdownText += `- **해석**: 비트코인의 장기적인 바닥 지지선입니다. 현재 가격이 이 선에 가까울수록 강력한 매수 기회입니다.\n`;
+    breakdownText += `\n`;
   }
 
   // Fear & Greed Analysis
   if (fearGreed) {
-    strategyText += `### 5. Fear & Greed Index (현재: ${fmt(fearGreed.currentValue)})\n\n`;
+    breakdownText += `### 5. Fear & Greed Index (현재: ${fmt(fearGreed.currentValue)})\n\n`;
     if (fearGreed.score >= 8) {
-      strategyText += `- **상태**: 🟢 **극단적 공포 (Extreme Fear)**\n`;
-      strategyText += `- **해석**: 대중이 공포에 질려 투매하고 있습니다. 역발상 투자로 매수하기 좋은 시점입니다.\n`;
+      breakdownText += `- **상태**: 🟢 **극단적 공포 (Extreme Fear)**\n`;
+      breakdownText += `- **해석**: 대중이 공포에 질려 투매하고 있습니다. 역발상 투자로 매수하기 좋은 시점입니다.\n`;
     } else if (fearGreed.score <= 2) {
-      strategyText += `- **상태**: 🔴 **극단적 탐욕 (Extreme Greed)**\n`;
-      strategyText += `- **해석**: 대중이 흥분하여 추격 매수하고 있습니다. 조심해야 할 시점입니다.\n`;
+      breakdownText += `- **상태**: 🔴 **극단적 탐욕 (Extreme Greed)**\n`;
+      breakdownText += `- **해석**: 대중이 흥분하여 추격 매수하고 있습니다. 조심해야 할 시점입니다.\n`;
     } else {
-      strategyText += `- **상태**: 🟡 **중립/공포**\n`;
-      strategyText += `- **해석**: 시장 심리가 한쪽으로 쏠리지 않았습니다.\n`;
+      breakdownText += `- **상태**: 🟡 **중립/공포**\n`;
+      breakdownText += `- **해석**: 시장 심리가 한쪽으로 쏠리지 않았습니다.\n`;
     }
-    strategyText += `\n`;
+    breakdownText += `\n`;
   }
 
   // Funding Rate Analysis
   if (funding) {
-    strategyText += `### 6. Funding Rate (현재: ${fmt(funding.currentValue)})\n\n`;
+    breakdownText += `### 6. Funding Rate (현재: ${fmt(funding.currentValue)})\n\n`;
     if (funding.score >= 7) {
-      strategyText += `- **상태**: 🟢 **음수/중립 (Negative/Neutral)**\n`;
-      strategyText += `- **해석**: 숏 포지션이 우세하거나 과열되지 않았습니다. 건전한 상승이 가능한 상태입니다.\n`;
+      breakdownText += `- **상태**: 🟢 **음수/중립 (Negative/Neutral)**\n`;
+      breakdownText += `- **해석**: 숏 포지션이 우세하거나 과열되지 않았습니다. 건전한 상승이 가능한 상태입니다.\n`;
     } else if (funding.score <= 3) {
-      strategyText += `- **상태**: 🔴 **과열 (Overheated)**\n`;
-      strategyText += `- **해석**: 롱 포지션이 과도하게 많아 롱 스퀴즈(급락) 위험이 있습니다.\n`;
+      breakdownText += `- **상태**: 🔴 **과열 (Overheated)**\n`;
+      breakdownText += `- **해석**: 롱 포지션이 과도하게 많아 롱 스퀴즈(급락) 위험이 있습니다.\n`;
     } else {
-      strategyText += `- **상태**: 🟡 **안정적**\n`;
-      strategyText += `- **해석**: 선물 시장의 과열 징후가 없습니다.\n`;
+      breakdownText += `- **상태**: 🟡 **안정적**\n`;
+      breakdownText += `- **해석**: 선물 시장의 과열 징후가 없습니다.\n`;
     }
-    strategyText += `\n`;
+    breakdownText += `\n`;
   }
 
   // Reserve Risk Analysis
   if (reserve) {
-    strategyText += `### 7. Reserve Risk (현재: ${fmt(reserve.currentValue)})\n\n`;
+    breakdownText += `### 7. Reserve Risk (현재: ${fmt(reserve.currentValue)})\n\n`;
     if (reserve.score >= 8) {
-      strategyText += `- **상태**: 🟢 **매력적 (Attractive)**\n`;
-      strategyText += `- **해석**: 장기 보유자들의 확신은 높은데 가격은 낮은 상태입니다. 매수하기 좋습니다.\n`;
+      breakdownText += `- **상태**: 🟢 **매력적 (Attractive)**\n`;
+      breakdownText += `- **해석**: 장기 보유자들의 확신은 높은데 가격은 낮은 상태입니다. 매수하기 좋습니다.\n`;
     } else {
-      strategyText += `- **상태**: 🟡 **보통**\n`;
-      strategyText += `- **해석**: 리스크 대비 보상이 평범한 수준입니다.\n`;
+      breakdownText += `- **상태**: 🟡 **보통**\n`;
+      breakdownText += `- **해석**: 리스크 대비 보상이 평범한 수준입니다.\n`;
     }
-    strategyText += `\n`;
+    breakdownText += `\n`;
   }
 
   let risksAndAdvice = `# 💡 투자 인사이트 (Insights)\n\n`;
@@ -302,6 +302,9 @@ export const generateKoreanAnalysis = (
   } else {
     risksAndAdvice += `- 시장의 관심이 식어있거나 눈치보기 장세가 이어지고 있습니다.\n\n`;
   }
+
+  // Append Breakdown to the end of Insights to match requested order
+  risksAndAdvice += breakdownText;
 
   return { interpretation, strategyText, risksAndAdvice };
 };

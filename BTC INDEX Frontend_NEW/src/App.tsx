@@ -239,7 +239,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 outfit-font tracking-tight">
-                Quant Intelligence
+                Bitcoin Index Dashboard
               </h1>
               <p className="text-xs text-cyan-400/80 font-medium tracking-wider uppercase mt-0.5 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
@@ -269,7 +269,7 @@ export default function App() {
             onClick={() => setView(ViewMode.REPORT)}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${view === ViewMode.REPORT ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
-            <FileText className="w-4 h-4" /> Deep Analysis
+            <FileText className="w-4 h-4" /> Deep Report
           </button>
           <button
             onClick={() => setView(ViewMode.SIMULATION)}
