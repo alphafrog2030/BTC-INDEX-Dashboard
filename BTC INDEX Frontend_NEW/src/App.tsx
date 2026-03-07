@@ -170,6 +170,7 @@ export default function App() {
                     <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-cyan-500/30 transition-all block break-keep leading-relaxed" {...props} />
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-cyan-300" {...props} />,
+                  code: ({ node, className, children, ...props }: any) => <span className="text-base font-bold text-cyan-400 block mb-2 tracking-wide" {...props}>{children}</span>,
                 }}
               >
                 {currentReport.strategyText}
@@ -194,6 +195,7 @@ export default function App() {
                     <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-indigo-500/30 transition-all block break-keep leading-relaxed" {...props} />
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-indigo-300" {...props} />,
+                  code: ({ node, className, children, ...props }: any) => <span className="text-base font-bold text-cyan-400 block mb-2 tracking-wide" {...props}>{children}</span>,
                 }}
               >
                 {currentReport.risksAndAdvice}
@@ -218,6 +220,7 @@ export default function App() {
                     <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-teal-500/30 transition-all block break-keep leading-relaxed" {...props} />
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-teal-300" {...props} />,
+                  code: ({ node, className, children, ...props }: any) => <span className="text-base font-bold text-cyan-400 block mb-2 tracking-wide" {...props}>{children}</span>,
                 }}
               >
                 {currentReport.breakdownText || ""}
