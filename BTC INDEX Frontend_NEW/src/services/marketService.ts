@@ -69,6 +69,7 @@ export const fetchMarketData = async (): Promise<ReportData> => {
       interpretation: texts.interpretation,
       strategyText: texts.strategyText,
       risksAndAdvice: texts.risksAndAdvice,
+      breakdownText: texts.breakdownText,
       indicators,
       sources: ["CoinGecko", "Alternative.me", "MacroMicro (via Backend)"]
     };
