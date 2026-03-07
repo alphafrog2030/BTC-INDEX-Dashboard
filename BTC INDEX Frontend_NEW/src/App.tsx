@@ -166,7 +166,7 @@ export default function App() {
                   ),
                   ul: ({ node, ...props }) => <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 mb-6" {...props} />,
                   li: ({ node, ...props }) => (
-                    <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-cyan-500/30 transition-all flex flex-col gap-1 break-keep" {...props} />
+                    <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-cyan-500/30 transition-all block break-keep leading-relaxed" {...props} />
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-cyan-300" {...props} />,
                 }}
@@ -186,7 +186,7 @@ export default function App() {
                     ),
                     ul: ({ node, ...props }) => <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 mb-6" {...props} />,
                     li: ({ node, ...props }) => (
-                      <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-indigo-500/30 transition-all flex flex-col gap-1 break-keep" {...props} />
+                      <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-indigo-500/30 transition-all block break-keep leading-relaxed" {...props} />
                     ),
                     strong: ({ node, ...props }) => <strong className="font-bold text-indigo-300" {...props} />,
                   }}
