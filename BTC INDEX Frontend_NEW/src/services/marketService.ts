@@ -152,21 +152,20 @@ export const generateKoreanAnalysis = (
   const fmt = (val: number | string) => (typeof val === 'number' ? val.toLocaleString(undefined, { maximumFractionDigits: 2 }) : val);
 
   let strategyText = `# 📊 종합 점수 및 투자 전략\n\n`;
-  strategyText += `**현재 종합 점수: ${totalScore.toFixed(0)}점** (${interpretation})\n\n`;
 
   if (totalScore >= 70) {
-    strategyText += `현재 시장은 **저평가 구간**에 위치해 있으며, 장기적인 관점에서 **적극적인 매수(Accumulation)**가 유리한 시기입니다.\n\n공포가 시장을 지배하고 있을 가능성이 높으나, 역사적으로 이러한 구간은 최고의 수익률을 기록했습니다.\n\n`;
+    strategyText += `> **현재 시장은 저평가 구간**에 위치해 있으며, 장기적인 관점에서 **적극적인 매수(Accumulation)**가 유리한 시기입니다.\n>\n> 공포가 시장을 지배하고 있을 가능성이 높으나, 역사적으로 이러한 구간은 최고의 수익률을 기록했습니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
-    strategyText += `- **공격적 투자자**: 여유 자금의 40~50%를 현재 가격대에서 분할 진입 고려.\n\n`;
-    strategyText += `- **보수적 투자자**: 매주/매월 정해진 날짜에 일정 금액을 적립식으로 매수(DCA)하는 전략 추천.\n\n`;
+    strategyText += `- **공격적 투자자**: 여유 자금의 40~50%를 현재 가격대에서 분할 진입 고려.\n`;
+    strategyText += `- **보수적 투자자**: 매주/매월 정해진 날짜에 일정 금액을 적립식으로 매수(DCA)하는 전략 추천.\n`;
     strategyText += `- **주의**: 바닥을 정확히 예측하려 하기보다, 평균 단가를 낮추는 데 집중하세요.\n\n`;
   } else if (totalScore <= 30) {
-    strategyText += `현재 시장은 **과열 구간**에 진입했습니다. 탐욕이 지배하고 있으며, 가격이 단기적으로 급등했을 가능성이 큽니다.\n\n리스크 관리가 최우선입니다.\n\n`;
+    strategyText += `> **현재 시장은 과열 구간**에 진입했습니다. 탐욕이 지배하고 있으며, 가격이 단기적으로 급등했을 가능성이 큽니다.\n>\n> 리스크 관리가 최우선입니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
-    strategyText += `- **이익 실현**: 보유 물량의 10~20%씩 분할 매도하여 현금 비중 확대.\n\n`;
+    strategyText += `- **이익 실현**: 보유 물량의 10~20%씩 분할 매도하여 현금 비중 확대.\n`;
     strategyText += `- **신규 진입 자제**: 지금 매수하는 것은 고점에 물릴 위험이 매우 큽니다. 조정(Correction)을 기다리세요.\n\n`;
   } else {
-    strategyText += `현재 시장은 **중립 구간**입니다. 뚜렷한 방향성보다는 횡보하거나 완만한 상승/하락을 보일 수 있습니다.\n\n`;
+    strategyText += `> **현재 시장은 중립 구간**입니다. 뚜렷한 방향성보다는 횡보하거나 완만한 상승/하락을 보일 수 있습니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
     strategyText += `- **관망 및 소액 적립**: 무리한 베팅보다는 시장의 방향성이 결정될 때까지 관망하거나, 소액으로 꾸준히 모아가는 전략이 유효합니다.\n\n`;
   }
@@ -279,14 +278,11 @@ export const generateKoreanAnalysis = (
 
   risksAndAdvice += `### 1. 과거 사이클 비교 (Historical Context)\n\n`;
   if (totalScore >= 70) {
-    risksAndAdvice += `- 현재 지표들의 패턴은 **2018년 약세장 바닥** 또는 **2020년 코로나 위기 직후**와 유사합니다.\n\n`;
-    risksAndAdvice += `- 과거 데이터에 따르면, 이 구간에서 매수한 투자자들은 1~2년 내에 큰 수익을 거두었습니다.\n\n`;
+    risksAndAdvice += `> 현재 지표들의 패턴은 **2018년 약세장 바닥** 또는 **2020년 코로나 위기 직후**와 유사합니다.\n>\n> 과거 데이터에 따르면, 이 구간에서 매수한 투자자들은 1~2년 내에 큰 수익을 거두었습니다.\n\n`;
   } else if (totalScore <= 30) {
-    risksAndAdvice += `- 현재 지표들은 **2021년 상반기 고점** 부근과 유사한 과열 양상을 보이고 있습니다.\n\n`;
-    risksAndAdvice += `- 과거 데이터상 이 구간 이후에는 큰 폭의 가격 조정(-30% 이상)이 발생하곤 했습니다.\n\n`;
+    risksAndAdvice += `> 현재 지표들은 **2021년 상반기 고점** 부근과 유사한 과열 양상을 보이고 있습니다.\n>\n> 과거 데이터상 이 구간 이후에는 큰 폭의 가격 조정(-30% 이상)이 발생하곤 했습니다.\n\n`;
   } else {
-    risksAndAdvice += `- 현재는 **상승장 중간 단계(Mid-Cycle)** 또는 **조정기**와 유사한 패턴입니다.\n\n`;
-    risksAndAdvice += `- 방향성이 명확해질 때까지 인내심을 갖는 것이 중요합니다.\n\n`;
+    risksAndAdvice += `> 현재는 **상승장 중간 단계(Mid-Cycle)** 또는 **조정기**와 유사한 패턴입니다.\n>\n> 방향성이 명확해질 때까지 인내심을 갖는 것이 중요합니다.\n\n`;
   }
 
   risksAndAdvice += `### 2. 단기 vs 장기 전망\n\n`;
