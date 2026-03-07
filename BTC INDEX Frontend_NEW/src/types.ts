@@ -16,6 +16,7 @@ export interface ReportData {
   indicators: Indicator[];
   strategyText: string;
   risksAndAdvice: string;
+  breakdownText?: string;
   sources: string[];
 }
 

@@ -153,6 +153,7 @@ export default function App() {
             </div>
           </div>
 
+          {/* 1. Strategy Card */}
           <div className="bg-slate-800/40 p-4 sm:p-8 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-sm">
             <div className="prose prose-invert prose-cyan max-w-none">
               <ReactMarkdown
@@ -173,27 +174,54 @@ export default function App() {
               >
                 {currentReport.strategyText}
               </ReactMarkdown>
+            </div>
+          </div>
 
-              <div className="max-w-none">
-                <ReactMarkdown
-                  components={{
-                    h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 mb-8 mt-12 pb-4 border-b border-slate-700/50 tracking-tight flex items-center gap-3" {...props} />,
-                    h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-6 mt-10 flex items-center gap-2" {...props} />,
-                    h3: ({ node, ...props }) => <h3 className="text-sm font-bold bg-slate-900/60 inline-flex items-center px-4 py-2 rounded-lg text-cyan-300 mb-4 mt-8 border border-white/5 shadow-inner" {...props} />,
-                    p: ({ node, ...props }) => <p className="mb-4 text-sm sm:text-base leading-relaxed text-slate-300 break-keep" {...props} />,
-                    blockquote: ({ node, ...props }) => (
-                      <blockquote className="border-l-4 border-indigo-400 bg-gradient-to-r from-indigo-500/10 to-transparent p-4 sm:p-5 rounded-r-xl my-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]" {...props} />
-                    ),
-                    ul: ({ node, ...props }) => <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 mb-6" {...props} />,
-                    li: ({ node, ...props }) => (
-                      <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-indigo-500/30 transition-all block break-keep leading-relaxed" {...props} />
-                    ),
-                    strong: ({ node, ...props }) => <strong className="font-bold text-indigo-300" {...props} />,
-                  }}
-                >
-                  {currentReport.risksAndAdvice}
-                </ReactMarkdown>
-              </div>
+          {/* 2. Insights Card */}
+          <div className="bg-slate-800/40 p-4 sm:p-8 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-sm">
+            <div className="prose prose-invert prose-indigo max-w-none">
+              <ReactMarkdown
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-8 mt-4 pb-4 border-b border-slate-700/50 tracking-tight flex items-center gap-3" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-6 mt-10 flex items-center gap-2" {...props} />,
+                  h3: ({ node, ...props }) => <h3 className="text-sm font-bold bg-slate-900/60 inline-flex items-center px-4 py-2 rounded-lg text-indigo-300 mb-4 mt-8 border border-white/5 shadow-inner" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-4 text-sm sm:text-base leading-relaxed text-slate-300 break-keep" {...props} />,
+                  blockquote: ({ node, ...props }) => (
+                    <blockquote className="border-l-4 border-indigo-400 bg-gradient-to-r from-indigo-500/10 to-transparent p-4 sm:p-5 rounded-r-xl my-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]" {...props} />
+                  ),
+                  ul: ({ node, ...props }) => <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 mb-6" {...props} />,
+                  li: ({ node, ...props }) => (
+                    <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-indigo-500/30 transition-all block break-keep leading-relaxed" {...props} />
+                  ),
+                  strong: ({ node, ...props }) => <strong className="font-bold text-indigo-300" {...props} />,
+                }}
+              >
+                {currentReport.risksAndAdvice}
+              </ReactMarkdown>
+            </div>
+          </div>
+
+          {/* 3. Breakdown Card */}
+          <div className="bg-slate-800/40 p-4 sm:p-8 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-sm">
+            <div className="prose prose-invert prose-teal max-w-none">
+              <ReactMarkdown
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400 mb-8 mt-4 pb-4 border-b border-slate-700/50 tracking-tight flex items-center gap-3" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-6 mt-10 flex items-center gap-2" {...props} />,
+                  h3: ({ node, ...props }) => <h3 className="text-sm font-bold bg-slate-900/60 inline-flex items-center px-4 py-2 rounded-lg text-teal-300 mb-4 mt-8 border border-white/5 shadow-inner" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-4 text-sm sm:text-base leading-relaxed text-slate-300 break-keep" {...props} />,
+                  blockquote: ({ node, ...props }) => (
+                    <blockquote className="border-l-4 border-teal-400 bg-gradient-to-r from-teal-500/10 to-transparent p-4 sm:p-5 rounded-r-xl my-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]" {...props} />
+                  ),
+                  ul: ({ node, ...props }) => <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 mb-6" {...props} />,
+                  li: ({ node, ...props }) => (
+                    <li className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50 text-sm text-slate-300 shadow-lg hover:bg-slate-800/50 hover:border-teal-500/30 transition-all block break-keep leading-relaxed" {...props} />
+                  ),
+                  strong: ({ node, ...props }) => <strong className="font-bold text-teal-300" {...props} />,
+                }}
+              >
+                {currentReport.breakdownText || ""}
+              </ReactMarkdown>
             </div>
           </div>
         </div>

@@ -130,7 +130,7 @@ export const generateKoreanAnalysis = (
   btcPrice: number,
   totalScore: number,
   indicators: Indicator[]
-): { interpretation: string; strategyText: string; risksAndAdvice: string } => {
+): { interpretation: string; strategyText: string; risksAndAdvice: string; breakdownText?: string } => {
   // 1. Interpretation (Current Status Summary)
   let interpretation = "시장 데이터 분석 중...";
   if (totalScore >= 90) interpretation = "💎 강력한 매수 신호 (Strong Buy)";
@@ -278,8 +278,5 @@ export const generateKoreanAnalysis = (
   }
   risksAndAdvice += insight3 + "\n";
 
-  // Append Breakdown to the end of Insights to match requested order
-  risksAndAdvice += breakdownText;
-
-  return { interpretation, strategyText, risksAndAdvice };
+  return { interpretation, strategyText, risksAndAdvice, breakdownText };
 };
