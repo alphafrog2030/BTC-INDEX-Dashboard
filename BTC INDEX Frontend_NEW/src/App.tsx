@@ -42,6 +42,24 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>(ViewMode.DASHBOARD);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [scrollPositions, setScrollPositions] = useState<Record<ViewMode, number>>({
+    [ViewMode.DASHBOARD]: 0,
+    [ViewMode.REPORT]: 0,
+    [ViewMode.SIMULATION]: 0,
+  });
+
+  const handleTabChange = (newView: ViewMode) => {
+    if (view === newView) return;
+    setScrollPositions(prev => ({ ...prev, [view]: window.scrollY }));
+    setView(newView);
+  };
+
+  useEffect(() => {
+    // Need a tiny timeout to ensure React finishes DOM rendering before scrolling
+    setTimeout(() => {
+      window.scrollTo({ top: scrollPositions[view], behavior: 'instant' });
+    }, 0);
+  }, [view]);
 
   const fetchReport = async () => {
     setLoading(true);
@@ -260,19 +278,19 @@ export default function App() {
         {/* Desktop Navigation Tabs (Hidden on Mobile) */}
         <div className="hidden md:flex gap-2 mb-10 p-1.5 bg-slate-900/50 backdrop-blur-md border border-white/5 rounded-2xl w-fit mx-auto shadow-2xl">
           <button
-            onClick={() => setView(ViewMode.DASHBOARD)}
+            onClick={() => handleTabChange(ViewMode.DASHBOARD)}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${view === ViewMode.DASHBOARD ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <TrendingUp className="w-4 h-4" /> Dashboard
           </button>
           <button
-            onClick={() => setView(ViewMode.REPORT)}
+            onClick={() => handleTabChange(ViewMode.REPORT)}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${view === ViewMode.REPORT ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <FileText className="w-4 h-4" /> Deep Report
           </button>
           <button
-            onClick={() => setView(ViewMode.SIMULATION)}
+            onClick={() => handleTabChange(ViewMode.SIMULATION)}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${view === ViewMode.SIMULATION ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             <Wallet className="w-4 h-4" /> Simulation
@@ -302,21 +320,21 @@ export default function App() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-50 pb-safe">
         <div className="flex justify-around items-center h-16">
           <button
-            onClick={() => setView(ViewMode.DASHBOARD)}
+            onClick={() => handleTabChange(ViewMode.DASHBOARD)}
             className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${view === ViewMode.DASHBOARD ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <TrendingUp className="w-5 h-5" />
             <span className="text-[10px] font-medium">Dashboard</span>
           </button>
           <button
-            onClick={() => setView(ViewMode.REPORT)}
+            onClick={() => handleTabChange(ViewMode.REPORT)}
             className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${view === ViewMode.REPORT ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <FileText className="w-5 h-5" />
             <span className="text-[10px] font-medium">Report</span>
           </button>
           <button
-            onClick={() => setView(ViewMode.SIMULATION)}
+            onClick={() => handleTabChange(ViewMode.SIMULATION)}
             className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${view === ViewMode.SIMULATION ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <Wallet className="w-5 h-5" />

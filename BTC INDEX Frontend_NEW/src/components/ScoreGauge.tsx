@@ -41,7 +41,16 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score }) => {
 
       {/* Container with viewBox ensures SVG scales correctly */}
       <div className="relative w-56 h-56 transition-transform duration-500 group-hover:scale-105">
-        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 192 192" style={{ '--target-offset': offset } as React.CSSProperties}>
+        <svg className="w-full h-full transform -rotate-90 overflow-visible" viewBox="0 0 192 192" style={{ '--target-offset': offset } as React.CSSProperties}>
+          <defs>
+            <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
           {/* Background Track */}
           <circle
             cx="96"
@@ -51,7 +60,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score }) => {
             strokeWidth="10"
             fill="transparent"
           />
-          {/* Value Progress with Glow effect */}
+          {/* Value Progress with Cross-browser SVG Glow effect */}
           <circle
             cx="96"
             cy="96"
@@ -63,7 +72,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score }) => {
             strokeDashoffset={offset}
             strokeLinecap="round"
             className={`${ringColorClass} transition-all duration-[1500ms] ease-out animate-draw`}
-            style={{ filter: `drop-shadow(0 0 8px currentColor)` }}
+            style={{ filter: `url(#neonGlow)` }}
           />
         </svg>
         <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center text-white">
