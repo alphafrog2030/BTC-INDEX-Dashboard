@@ -1,6 +1,6 @@
 import { ReportData, Indicator } from '../types';
-// [변경] FastAPI 백엔드 주소 (로컬 개발용)
-const API_URL = "http://127.0.0.1:8000/api/data";
+// [변경] 깃허브 Raw Data 주소 (운영 환경 배포용)
+const API_URL = "https://raw.githubusercontent.com/alphafrog2030/BTC-INDEX-Dashboard/main/BTC%20INDEX%20Backend/data.json";
 
 export const fetchMarketData = async (): Promise<ReportData> => {
   try {
@@ -153,7 +153,7 @@ export const generateKoreanAnalysis = (
 
   let strategyText = `# 📊 종합 점수 및 투자 전략\n\n`;
   strategyText += `**현재 종합 점수: ${totalScore.toFixed(0)}점** (${interpretation})\n\n`;
-  
+
   if (totalScore >= 70) {
     strategyText += `현재 시장은 **저평가 구간**에 위치해 있으며, 장기적인 관점에서 **적극적인 매수(Accumulation)**가 유리한 시기입니다.\n\n공포가 시장을 지배하고 있을 가능성이 높으나, 역사적으로 이러한 구간은 최고의 수익률을 기록했습니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
@@ -246,7 +246,7 @@ export const generateKoreanAnalysis = (
     strategyText += `\n`;
   }
 
-    // Funding Rate Analysis
+  // Funding Rate Analysis
   if (funding) {
     strategyText += `### 6. Funding Rate (현재: ${fmt(funding.currentValue)})\n\n`;
     if (funding.score >= 7) {
@@ -276,7 +276,7 @@ export const generateKoreanAnalysis = (
   }
 
   let risksAndAdvice = `# 💡 투자 인사이트 (Insights)\n\n`;
-  
+
   risksAndAdvice += `### 1. 과거 사이클 비교 (Historical Context)\n\n`;
   if (totalScore >= 70) {
     risksAndAdvice += `- 현재 지표들의 패턴은 **2018년 약세장 바닥** 또는 **2020년 코로나 위기 직후**와 유사합니다.\n\n`;
@@ -288,7 +288,7 @@ export const generateKoreanAnalysis = (
     risksAndAdvice += `- 현재는 **상승장 중간 단계(Mid-Cycle)** 또는 **조정기**와 유사한 패턴입니다.\n\n`;
     risksAndAdvice += `- 방향성이 명확해질 때까지 인내심을 갖는 것이 중요합니다.\n\n`;
   }
-  
+
   risksAndAdvice += `### 2. 단기 vs 장기 전망\n\n`;
   risksAndAdvice += `- **단기 (1주~1개월)**: ${funding && funding.score <= 4 ? '선물 시장 과열로 인한 변동성 확대 주의' : '안정적인 흐름 예상되나 뉴스에 따른 등락 가능성'}\n\n`;
   risksAndAdvice += `- **장기 (6개월~1년)**: ${totalScore >= 60 ? '온체인 지표들이 강력한 상승 여력을 시사함' : '거시 경제 상황에 따라 제한적인 상승 또는 횡보 예상'}\n\n`;
