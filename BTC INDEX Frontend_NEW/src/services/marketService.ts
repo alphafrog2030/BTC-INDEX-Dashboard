@@ -44,7 +44,7 @@ export const fetchMarketData = async (): Promise<ReportData> => {
       if (!isMissing && ind.name === '200 Week MA') {
         const ratio = price / value;
         const diff = (ratio - 1) * 100;
-        displayVal = diff >= 0 ? `${diff.toFixed(2)}% 높음` : `${Math.abs(diff).toFixed(2)}% 낮음`;
+        displayVal = diff >= 0 ? `+${diff.toFixed(2)}%` : `${diff.toFixed(2)}%`;
       }
       if (!isMissing && ind.name === 'Funding Rate') displayVal = `${(value * 100).toFixed(3)}%`;
       if (!isMissing && ind.name === 'Fear & Greed') displayVal = `${value}/100`;

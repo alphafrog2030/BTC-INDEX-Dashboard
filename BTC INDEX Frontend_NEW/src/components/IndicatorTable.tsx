@@ -70,13 +70,13 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
     <div className="overflow-hidden glass-panel rounded-2xl">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800 bg-slate-900/40">
-            <th className="p-5 font-semibold">Indicator <span className="text-[10px] font-normal text-slate-500 normal-case ml-1">(Click for Info)</span></th>
-            <th className="p-5 font-semibold hidden sm:table-cell text-right">Weight</th>
-            <th className="p-5 font-semibold whitespace-nowrap text-right">Current Value</th>
-            <th className="p-5 font-semibold text-center hidden sm:table-cell">Raw</th>
-            <th className="p-5 font-semibold text-center hidden md:table-cell">W. Score</th>
-            <th className="p-5 font-semibold text-right">Signal</th>
+          <tr className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-800 bg-slate-900/40">
+            <th className="p-3 sm:p-4 font-semibold">Indicator <span className="text-[10px] font-normal text-slate-500 normal-case ml-1 hidden sm:inline">(Click for Info)</span></th>
+            <th className="p-3 sm:p-4 font-semibold hidden sm:table-cell text-right">Weight</th>
+            <th className="p-3 sm:p-4 font-semibold whitespace-nowrap text-right">Value</th>
+            <th className="p-3 sm:p-4 font-semibold text-center hidden sm:table-cell">Raw</th>
+            <th className="p-3 sm:p-4 font-semibold text-center hidden md:table-cell">W. Score</th>
+            <th className="p-3 sm:p-4 font-semibold text-right">Signal</th>
           </tr>
         </thead>
         <tbody className="text-slate-200 divide-y divide-slate-800/50">
@@ -86,29 +86,29 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                 onClick={() => toggleRow(idx)}
                 className={`cursor-pointer transition-all duration-200 ${expandedRow === idx ? 'bg-indigo-500/5 border-l-2 border-l-cyan-400' : 'hover:bg-white/5 border-l-2 border-l-transparent'}`}
               >
-                <td className="p-4 sm:p-5 font-medium">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-1.5 rounded-md transition-colors ${expandedRow === idx ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'}`}>
-                      {expandedRow === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                <td className="p-2 sm:p-4 font-medium max-w-[130px] sm:max-w-none break-words">
+                  <div className="flex items-center gap-1.5 sm:gap-3">
+                    <div className={`p-1 sm:p-1.5 rounded-md transition-colors shrink-0 ${expandedRow === idx ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'}`}>
+                      {expandedRow === idx ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />}
                     </div>
-                    <span className={`font-semibold tracking-wide ${expandedRow === idx ? 'text-cyan-400' : 'text-slate-200'}`}>{ind.name}</span>
+                    <span className={`font-semibold tracking-wide text-[11px] sm:text-base leading-tight ${expandedRow === idx ? 'text-cyan-400' : 'text-slate-200'}`}>{ind.name}</span>
                     {SOURCE_URLS[ind.name] && (
                       <a
                         href={SOURCE_URLS[ind.name]}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="text-slate-500 hover:text-cyan-400 transition-colors ml-1 p-1 hover:bg-cyan-500/10 rounded"
+                        className="text-slate-500 hover:text-cyan-400 transition-colors shrink-0 ml-0.5 sm:ml-1 p-0.5 sm:p-1 hover:bg-cyan-500/10 rounded"
                         title={`Verify ${ind.name} on external chart`}
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </a>
                     )}
                   </div>
                 </td>
-                <td className="p-4 sm:p-5 text-slate-400 hidden sm:table-cell text-right font-mono text-sm">{ind.weight}%</td>
-                <td className="p-4 sm:p-5 font-mono text-cyan-400 text-sm sm:text-base whitespace-nowrap text-right font-semibold">{ind.currentValue}</td>
-                <td className="p-4 sm:p-5 text-center hidden sm:table-cell">
+                <td className="p-2 sm:p-4 text-slate-400 hidden sm:table-cell text-right font-mono text-sm">{ind.weight}%</td>
+                <td className="p-2 sm:p-4 font-mono text-cyan-400 text-xs sm:text-base whitespace-nowrap text-right font-semibold">{ind.currentValue}</td>
+                <td className="p-2 sm:p-4 text-center hidden sm:table-cell">
                   <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold border ${ind.score >= 7 ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)]' :
                     ind.score <= 3 ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
                       'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
@@ -116,10 +116,10 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                     {ind.score}
                   </span>
                 </td>
-                <td className="p-4 sm:p-5 text-center font-mono text-slate-400 hidden md:table-cell text-sm">{ind.weightedScore.toFixed(2)}</td>
-                <td className="p-4 sm:p-5 text-right">
-                  <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wider border ${ind.signal === 'BUY' ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)]' :
-                    ind.signal === 'SELL' ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
+                <td className="p-2 sm:p-4 text-center font-mono text-slate-400 hidden md:table-cell text-sm">{ind.weightedScore.toFixed(2)}</td>
+                <td className="p-2 sm:p-4 text-right">
+                  <span className={`inline-flex items-center text-[9px] sm:text-xs font-bold px-1.5 py-1 sm:px-3 sm:py-1.5 rounded sm:rounded-md uppercase tracking-wider border ${ind.signal === 'BUY' ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-none sm:shadow-[0_0_10px_rgba(74,222,128,0.1)]' :
+                    ind.signal === 'SELL' ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-none sm:shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
                       'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
                     }`}>
                     {ind.signal}
