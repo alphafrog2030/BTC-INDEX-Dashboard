@@ -156,14 +156,11 @@ export const generateKoreanAnalysis = (
   if (totalScore >= 70) {
     strategyText += `> **현재 시장은 저평가 구간**에 위치해 있으며, 장기적인 관점에서 **적극적인 매수(Accumulation)**가 유리한 시기입니다.\n>\n> 공포가 시장을 지배하고 있을 가능성이 높으나, 역사적으로 이러한 구간은 최고의 수익률을 기록했습니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
-    strategyText += `- **공격적 투자자**: 여유 자금의 40~50%를 현재 가격대에서 분할 진입 고려.\n`;
-    strategyText += `- **보수적 투자자**: 매주/매월 정해진 날짜에 일정 금액을 적립식으로 매수(DCA)하는 전략 추천.\n`;
-    strategyText += `- **주의**: 바닥을 정확히 예측하려 하기보다, 평균 단가를 낮추는 데 집중하세요.\n\n`;
+    strategyText += `- **공격적 투자자 (Aggressive)**: 여유 자금의 40~50%를 현재 가격대에서 분할 진입 고려.<br/>**보수적 투자자 (Conservative)**: 매주/매월 정해진 날짜에 일정 금액을 적립식으로 매수(DCA)하는 전략 추천.<br/>*주의: 바닥을 정확히 예측하려 하기보다, 평균 단가를 낮추는 데 집중하세요.*\n\n`;
   } else if (totalScore <= 30) {
     strategyText += `> **현재 시장은 과열 구간**에 진입했습니다. 탐욕이 지배하고 있으며, 가격이 단기적으로 급등했을 가능성이 큽니다.\n>\n> 리스크 관리가 최우선입니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
-    strategyText += `- **이익 실현**: 보유 물량의 10~20%씩 분할 매도하여 현금 비중 확대.\n`;
-    strategyText += `- **신규 진입 자제**: 지금 매수하는 것은 고점에 물릴 위험이 매우 큽니다. 조정(Correction)을 기다리세요.\n\n`;
+    strategyText += `- **이익 실현 (Take Profit)**: 보유 물량의 10~20%씩 분할 매도하여 현금 비중 확대.<br/>**신규 진입 자제 (Caution)**: 지금 매수하는 것은 고점에 물릴 위험이 매우 큽니다. 조정(Correction)을 기다리세요.\n\n`;
   } else {
     strategyText += `> **현재 시장은 중립 구간**입니다. 뚜렷한 방향성보다는 횡보하거나 완만한 상승/하락을 보일 수 있습니다.\n\n`;
     strategyText += `### 💡 자금 배분 전략 (예시)\n\n`;
@@ -175,48 +172,39 @@ export const generateKoreanAnalysis = (
 
   // MVRV Analysis
   if (mvrv) {
-    strategyText += `### 1. MVRV Z-Score (현재: ${fmt(mvrv.currentValue)})\n\n`;
+    breakdownText += `### 1. MVRV Z-Score (현재: ${fmt(mvrv.currentValue)})\n\n`;
     if (mvrv.score >= 8) {
-      strategyText += `- **상태**: 🟢 **저평가 (Undervalued)**\n`;
-      strategyText += `- **해석**: 시장 가치가 실현 가치보다 낮거나 비슷합니다. 역사적 바닥권에 근접했습니다.\n`;
+      breakdownText += `- 🟢 **상태**: 저평가 (Undervalued) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 시장 가치가 실현 가치보다 낮거나 비슷합니다. 역사적 바닥권에 근접했습니다.\n`;
     } else if (mvrv.score <= 2) {
-      strategyText += `- **상태**: 🔴 **고평가 (Overvalued)**\n`;
-      strategyText += `- **해석**: 시장 가치가 실현 가치를 훨씬 웃돌고 있습니다. 거품이 끼어있을 가능성이 높습니다.\n`;
+      breakdownText += `- 🔴 **상태**: 고평가 (Overvalued) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 시장 가치가 실현 가치를 훨씬 웃돌고 있습니다. 거품이 끼어있을 가능성이 높습니다.\n`;
     } else {
-      strategyText += `- **상태**: 🟡 **중립 (Neutral)**\n`;
-      strategyText += `- **해석**: 적정 가치 수준에서 거래되고 있습니다.\n`;
+      breakdownText += `- 🟡 **상태**: 중립 (Neutral) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 적정 가치 수준에서 거래되고 있습니다.\n`;
     }
-    strategyText += `\n`;
+    breakdownText += `\n`;
   }
 
   // NUPL Analysis
   if (nupl) {
-    strategyText += `### 2. NUPL (현재: ${fmt(nupl.currentValue)})\n\n`;
+    breakdownText += `### 2. NUPL (현재: ${fmt(nupl.currentValue)})\n\n`;
     if (nupl.score >= 8) {
-      strategyText += `- **상태**: 🟢 **공포/항복 (Fear/Capitulation)**\n`;
-      strategyText += `- **해석**: 투자자들의 평균 수익률이 낮거나 손실 상태입니다. 매도 압력이 거의 소진되었습니다.\n`;
+      breakdownText += `- 🟢 **상태**: 공포/항복 (Fear/Capitulation) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 투자자들의 평균 수익률이 낮거나 손실 상태입니다. 매도 압력이 거의 소진되었습니다.\n`;
     } else if (nupl.score <= 2) {
-      strategyText += `- **상태**: 🔴 **환희/탐욕 (Euphoria/Greed)**\n`;
-      strategyText += `- **해석**: 대부분의 투자자가 큰 수익을 보고 있어 차익 실현 욕구가 강해질 수 있습니다.\n`;
+      breakdownText += `- 🔴 **상태**: 환희/탐욕 (Euphoria/Greed) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 대부분의 투자자가 큰 수익을 보고 있어 차익 실현 욕구가 강해질 수 있습니다.\n`;
     } else {
-      strategyText += `- **상태**: 🟡 **중립 (Neutral)**\n`;
-      strategyText += `- **해석**: 시장 심리가 안정적입니다.\n`;
+      breakdownText += `- 🟡 **상태**: 중립 (Neutral) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 시장 심리가 안정적입니다.\n`;
     }
-    strategyText += `\n`;
+    breakdownText += `\n`;
   }
 
   // Puell Multiple Analysis
   if (puell) {
-    strategyText += `### 3. Puell Multiple (현재: ${fmt(puell.currentValue)})\n\n`;
+    breakdownText += `### 3. Puell Multiple (현재: ${fmt(puell.currentValue)})\n\n`;
     if (puell.score >= 8) {
-      breakdownText += `- **상태**: 🟢 **채굴자 항복 (Miner Capitulation)**\n`;
-      breakdownText += `- **해석**: 채굴 수익성이 낮아 채굴자들이 코인을 팔지 못하거나 운영을 중단하는 바닥 신호입니다.\n`;
+      breakdownText += `- 🟢 **상태**: 채굴자 항복 (Miner Capitulation) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 채굴 수익성이 낮아 채굴자들이 코인을 팔지 못하거나 운영을 중단하는 바닥 신호입니다.\n`;
     } else if (puell.score <= 2) {
-      breakdownText += `- **상태**: 🔴 **채굴자 수익 극대화**\n`;
-      breakdownText += `- **해석**: 채굴 수익이 높아 채굴자들이 시장에 물량을 쏟아낼 수 있습니다.\n`;
+      breakdownText += `- 🔴 **상태**: 채굴자 수익 극대화 &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 채굴 수익이 높아 채굴자들이 시장에 물량을 쏟아낼 수 있습니다.\n`;
     } else {
-      breakdownText += `- **상태**: 🟡 **안정적**\n`;
-      breakdownText += `- **해석**: 채굴자들의 매도 압력이 평이한 수준입니다.\n`;
+      breakdownText += `- 🟡 **상태**: 안정적 &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 채굴자들의 매도 압력이 평이한 수준입니다.\n`;
     }
     breakdownText += `\n`;
   }
@@ -224,8 +212,7 @@ export const generateKoreanAnalysis = (
   // 200 Week MA Analysis
   if (ma200) {
     breakdownText += `### 4. 200 Week MA (현재: ${fmt(ma200.currentValue)})\n\n`;
-    breakdownText += `- **상태**: ${ma200.score >= 7 ? '🟢 지지선 근접 (Near Support)' : '🟡 추세 지속'}\n`;
-    breakdownText += `- **해석**: 비트코인의 장기적인 바닥 지지선입니다. 현재 가격이 이 선에 가까울수록 강력한 매수 기회입니다.\n`;
+    breakdownText += `- ${ma200.score >= 7 ? '🟢 **상태**: 지지선 근접 (Near Support)' : '🟡 **상태**: 추세 지속'} &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 비트코인의 장기적인 바닥 지지선입니다. 현재 가격이 이 선에 가까울수록 강력한 매수 기회입니다.\n`;
     breakdownText += `\n`;
   }
 
@@ -233,14 +220,11 @@ export const generateKoreanAnalysis = (
   if (fearGreed) {
     breakdownText += `### 5. Fear & Greed Index (현재: ${fmt(fearGreed.currentValue)})\n\n`;
     if (fearGreed.score >= 8) {
-      breakdownText += `- **상태**: 🟢 **극단적 공포 (Extreme Fear)**\n`;
-      breakdownText += `- **해석**: 대중이 공포에 질려 투매하고 있습니다. 역발상 투자로 매수하기 좋은 시점입니다.\n`;
+      breakdownText += `- 🟢 **상태**: 극단적 공포 (Extreme Fear) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 대중이 공포에 질려 투매하고 있습니다. 역발상 투자로 매수하기 좋은 시점입니다.\n`;
     } else if (fearGreed.score <= 2) {
-      breakdownText += `- **상태**: 🔴 **극단적 탐욕 (Extreme Greed)**\n`;
-      breakdownText += `- **해석**: 대중이 흥분하여 추격 매수하고 있습니다. 조심해야 할 시점입니다.\n`;
+      breakdownText += `- 🔴 **상태**: 극단적 탐욕 (Extreme Greed) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 대중이 흥분하여 추격 매수하고 있습니다. 조심해야 할 시점입니다.\n`;
     } else {
-      breakdownText += `- **상태**: 🟡 **중립/공포**\n`;
-      breakdownText += `- **해석**: 시장 심리가 한쪽으로 쏠리지 않았습니다.\n`;
+      breakdownText += `- 🟡 **상태**: 중립/공포 &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 시장 심리가 한쪽으로 쏠리지 않았습니다.\n`;
     }
     breakdownText += `\n`;
   }
@@ -249,14 +233,11 @@ export const generateKoreanAnalysis = (
   if (funding) {
     breakdownText += `### 6. Funding Rate (현재: ${fmt(funding.currentValue)})\n\n`;
     if (funding.score >= 7) {
-      breakdownText += `- **상태**: 🟢 **음수/중립 (Negative/Neutral)**\n`;
-      breakdownText += `- **해석**: 숏 포지션이 우세하거나 과열되지 않았습니다. 건전한 상승이 가능한 상태입니다.\n`;
+      breakdownText += `- 🟢 **상태**: 음수/중립 (Negative/Neutral) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 숏 포지션이 우세하거나 과열되지 않았습니다. 건전한 상승이 가능한 상태입니다.\n`;
     } else if (funding.score <= 3) {
-      breakdownText += `- **상태**: 🔴 **과열 (Overheated)**\n`;
-      breakdownText += `- **해석**: 롱 포지션이 과도하게 많아 롱 스퀴즈(급락) 위험이 있습니다.\n`;
+      breakdownText += `- 🔴 **상태**: 과열 (Overheated) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 롱 포지션이 과도하게 많아 롱 스퀴즈(급락) 위험이 있습니다.\n`;
     } else {
-      breakdownText += `- **상태**: 🟡 **안정적**\n`;
-      breakdownText += `- **해석**: 선물 시장의 과열 징후가 없습니다.\n`;
+      breakdownText += `- 🟡 **상태**: 안정적 &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 선물 시장의 과열 징후가 없습니다.\n`;
     }
     breakdownText += `\n`;
   }
@@ -265,11 +246,9 @@ export const generateKoreanAnalysis = (
   if (reserve) {
     breakdownText += `### 7. Reserve Risk (현재: ${fmt(reserve.currentValue)})\n\n`;
     if (reserve.score >= 8) {
-      breakdownText += `- **상태**: 🟢 **매력적 (Attractive)**\n`;
-      breakdownText += `- **해석**: 장기 보유자들의 확신은 높은데 가격은 낮은 상태입니다. 매수하기 좋습니다.\n`;
+      breakdownText += `- 🟢 **상태**: 매력적 (Attractive) &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 장기 보유자들의 확신은 높은데 가격은 낮은 상태입니다. 매수하기 좋습니다.\n`;
     } else {
-      breakdownText += `- **상태**: 🟡 **보통**\n`;
-      breakdownText += `- **해석**: 리스크 대비 보상이 평범한 수준입니다.\n`;
+      breakdownText += `- 🟡 **상태**: 보통 &nbsp;&nbsp;|&nbsp;&nbsp; **해석**: 리스크 대비 보상이 평범한 수준입니다.\n`;
     }
     breakdownText += `\n`;
   }
