@@ -110,8 +110,8 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                 <td className="p-4 sm:p-5 font-mono text-cyan-400 text-sm sm:text-base whitespace-nowrap text-right font-semibold">{ind.currentValue}</td>
                 <td className="p-4 sm:p-5 text-center hidden sm:table-cell">
                   <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold border ${ind.score >= 7 ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)]' :
-                      ind.score <= 3 ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
-                        'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
+                    ind.score <= 3 ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
+                      'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
                     }`}>
                     {ind.score}
                   </span>
@@ -119,8 +119,8 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                 <td className="p-4 sm:p-5 text-center font-mono text-slate-400 hidden md:table-cell text-sm">{ind.weightedScore.toFixed(2)}</td>
                 <td className="p-4 sm:p-5 text-right">
                   <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wider border ${ind.signal === 'BUY' ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)]' :
-                      ind.signal === 'SELL' ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
-                        'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
+                    ind.signal === 'SELL' ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :
+                      'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
                     }`}>
                     {ind.signal}
                   </span>
@@ -130,15 +130,15 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
               {/* Expanded Content */}
               {expandedRow === idx && INDICATOR_DETAILS[ind.name] && (
                 <tr className="bg-indigo-950/20">
-                  <td colSpan={6} className="p-0 border-b border-indigo-500/20">
-                    <div className="p-6 sm:p-8 animate-fadeIn">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <td colSpan={6} className="p-0 border-b border-indigo-500/20 max-w-[100vw] sm:max-w-none">
+                    <div className="p-4 sm:p-8 animate-fadeIn w-full overflow-hidden">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                         <div className="space-y-4">
                           <h4 className="flex items-center gap-2 text-sm font-bold text-indigo-400 uppercase tracking-widest border-b border-indigo-500/20 pb-2">
-                            <Info className="w-4 h-4" />
+                            <Info className="w-4 h-4 shrink-0" />
                             지표 설명 (What is it?)
                           </h4>
-                          <div className="prose prose-invert prose-sm text-slate-300 leading-relaxed">
+                          <div className="prose prose-invert prose-sm text-slate-300 leading-relaxed break-keep break-words whitespace-normal w-full max-w-none">
                             <ReactMarkdown
                               components={{
                                 strong: ({ node, ...props }) => <strong className="font-bold text-indigo-300" {...props} />,
@@ -151,7 +151,7 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                           <h4 className="flex items-center gap-2 text-sm font-bold text-cyan-400 uppercase tracking-widest border-b border-cyan-500/20 pb-2">
                             시그널 해석 (How to Interpret)
                           </h4>
-                          <div className="prose prose-invert prose-sm text-slate-300 bg-slate-900/60 p-5 rounded-xl border border-white/5 shadow-inner">
+                          <div className="prose prose-invert prose-sm text-slate-300 bg-slate-900/60 p-4 sm:p-5 rounded-xl border border-white/5 shadow-inner break-keep break-words whitespace-normal w-full max-w-none">
                             <ReactMarkdown
                               components={{
                                 strong: ({ node, ...props }) => <strong className="font-bold text-cyan-300" {...props} />,
