@@ -15,7 +15,7 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
-import { HISTORICAL_DATA, calculateSimilarity, WeeklyFractalPoint } from '../data/historicalData';
+import { HISTORICAL_DATA, calculateSimilarity, WeeklyFractalPoint, getDaysSinceHalving } from '../data/historicalData';
 
 const formatKoreanNumber = (num: number) => {
   if (num === 0) return '';
@@ -539,7 +539,7 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
                 <span className="text-slate-400 text-sm font-medium">MVRV Z-Score Tracker</span>
                 <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">{indicators.z.toFixed(2)}</span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner">
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ${indicators.z > 5 ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : indicators.z < 1 ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'bg-gradient-to-r from-yellow-500 to-orange-400'}`}
                   style={{ width: `${Math.min(Math.max((indicators.z / 8) * 100, 0), 100)}%` }}
@@ -550,13 +550,31 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
             <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-slate-400 text-sm font-medium">200주 MA 이격률</span>
-                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">{(indicators.ma * 100).toFixed(0)}%</span>
+                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">
+                  {indicators.ma >= 1 ? `+${((indicators.ma - 1) * 100).toFixed(0)}% (상단)` : `${((indicators.ma - 1) * 100).toFixed(0)}% (하단)`}
+                </span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner">
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex">
                 <div
-                  className={`h-full rounded-full transition-all duration-1000 ${indicators.ma > 1.5 ? 'bg-gradient-to-r from-orange-500 to-red-500' : indicators.ma < 0.8 ? 'bg-gradient-to-r from-emerald-500 to-green-400' : 'bg-gradient-to-r from-yellow-500 to-orange-400'}`}
-                  style={{ width: `${Math.min(Math.max((indicators.ma / 2.5) * 100, 0), 100)}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ${indicators.ma > 3 ? 'bg-gradient-to-r from-orange-500 to-red-500' : indicators.ma < 1 ? 'bg-gradient-to-r from-emerald-500 to-green-400' : 'bg-gradient-to-r from-yellow-500 to-orange-400'}`}
+                  style={{ width: `${Math.min(Math.max((indicators.ma / 10) * 100, 0), 100)}%` }}
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner flex flex-col justify-center items-center">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">단기 추세(60d)</span>
+                <span className={`text-sm font-bold ${indicators.s > 0 ? 'text-green-400' : 'text-red-400'} flex items-center gap-1`}>
+                  {indicators.s > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                  {indicators.s > 0 ? 'Uptrend' : 'Downtrend'}
+                </span>
+              </div>
+              <div className="p-3 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner flex flex-col justify-center items-center">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">반감기 사이클</span>
+                <span className="text-cyan-400 text-sm font-bold font-mono">
+                  D+{getDaysSinceHalving(indicators.date || new Date().toISOString())}일
+                </span>
               </div>
             </div>
           </div>
