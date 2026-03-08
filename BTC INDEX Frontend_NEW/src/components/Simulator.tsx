@@ -579,10 +579,10 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
         similarPeriods.length > 0 && (
           <div className="glass-panel p-4 sm:p-6 rounded-2xl relative">
             <div className="mb-6 px-2 sm:px-0">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2 tracking-wide">
-                <TrendingUp className="w-5 h-5 text-cyan-400 shrink-0" />
-                온체인 프랙탈 분석 도표
-              </h3>
+              <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 tracking-tight flex items-center justify-center gap-3 mb-2">
+                <TrendingUp className="w-6 h-6 text-cyan-400 shrink-0" />
+                유사 과거패턴 기반 {investmentPeriod >= 12 ? `${investmentPeriod / 12}년` : `${investmentPeriod}개월`} 예측 차트
+              </h2>
               <p className="text-xs text-slate-400 mt-2 font-medium">
                 현재의 가격 궤적(흰색)이 미래에 어떤 형태(하늘색)로 진행될지, 과거 유사 시점들의 데이터 세트 라인을 기반으로 시각화합니다.
               </p>
