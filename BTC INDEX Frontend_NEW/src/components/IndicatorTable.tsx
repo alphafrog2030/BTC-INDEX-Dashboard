@@ -65,7 +65,7 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
       value = (parseFloat(diffStr) / 100) + 1;
     } else if (name === 'Funding Rate') {
       const diffStr = valueStr.replace(/[^0-9.-]/g, '');
-      value = parseFloat(diffStr) / 100;
+      value = parseFloat(diffStr);
     } else {
       value = parseFloat(valueStr.replace(/[^0-9.-]/g, ''));
     }
