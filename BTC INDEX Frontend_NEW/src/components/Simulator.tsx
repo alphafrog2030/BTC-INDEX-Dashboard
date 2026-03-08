@@ -557,14 +557,31 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-slate-400 text-sm font-medium">200주 MA 이격률</span>
                 <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">
-                  {indicators.ma >= 1 ? `+${((indicators.ma - 1) * 100).toFixed(0)}% (상단)` : `${((indicators.ma - 1) * 100).toFixed(0)}% (하단)`}
+                  {indicators.ma >= 1 ? `+${((indicators.ma - 1) * 100).toFixed(0)}% (이평선 위)` : `${((indicators.ma - 1) * 100).toFixed(0)}% (이평선 아래)`}
                 </span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex">
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
+                {/* Safe zone marker (0.5 to 1.5) -> 0% to 22.2% of the bar assuming 5.0 max */}
+                {/* Neutral zone marker (1.5 to 2.5) -> 22.2% to 44.4% */}
+                {/* Danger zone marker (2.5+) -> 44.4%+ */}
                 <div
-                  className={`h-full rounded-full transition-all duration-1000 ${indicators.ma > 3 ? 'bg-gradient-to-r from-orange-500 to-red-500' : indicators.ma < 1 ? 'bg-gradient-to-r from-emerald-500 to-green-400' : 'bg-gradient-to-r from-yellow-500 to-orange-400'}`}
-                  style={{ width: `${Math.min(Math.max((indicators.ma / 10) * 100, 0), 100)}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ${indicators.ma >= 2.5
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                      : indicators.ma < 1.5
+                        ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                        : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                    }`}
+                  style={{
+                    // Map 0.5x to 0%, 5.0x to 100%
+                    width: `${Math.min(Math.max(((indicators.ma - 0.5) / 4.5) * 100, 0), 100)}%`
+                  }}
                 />
+              </div>
+              <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono px-1">
+                <span>0.5x (바닥)</span>
+                <span>1.5x (안전)</span>
+                <span>2.5x (경계)</span>
+                <span>5.0x (광기)</span>
               </div>
             </div>
 
