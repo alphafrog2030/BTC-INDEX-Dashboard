@@ -295,6 +295,49 @@ def save_and_push_to_github():
         print(f"❌ Failed to save JSON: {e}")
         return
 
+    # === [Phase 2] Append to historicalData.json ===
+    frontend_data_path = os.path.normpath(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", 
+        "BTC INDEX Frontend_NEW", "src", "data", "historicalData.json"
+    ))
+    try:
+        print("Step 4: Appending to historicalData.json...")
+        if os.path.exists(frontend_data_path):
+            with open(frontend_data_path, "r", encoding="utf-8") as f:
+                hist_array = json.load(f)
+            
+            today_str = datetime.now().strftime('%Y-%m-%d')
+            
+            if hist_array and hist_array[-1].get('d') == today_str:
+                print(f"   ℹ️ Data for {today_str} already exists. Skipping append.")
+            else:
+                p_val = market.get("current_price_usd", 0)
+                z_val = onchain.get("mvrv_z_score", 0)
+                ma_val = market.get("wma_ratio", 0)
+                
+                if z_val is not None:
+                    # 60d slope estimate: 60 days / 7 days per point =~ 8.5 points (use 8 points ago)
+                    if len(hist_array) > 8:
+                        if isinstance(z_val, str):
+                            z_val = float(z_val)
+                        s_val = z_val - hist_array[-8].get('z', 0)
+                    else:
+                        s_val = 0
+                    
+                    hist_array.append({
+                        "d": today_str,
+                        "p": round(float(p_val), 2),
+                        "z": round(float(z_val), 3),
+                        "ma": round(float(ma_val), 3),
+                        "s": round(float(s_val), 3)
+                    })
+                    
+                    with open(frontend_data_path, "w", encoding="utf-8") as f:
+                        json.dump(hist_array, f, indent=2)
+                    print(f"   ✅ Appended {today_str} to historicalData.json")
+    except Exception as e:
+        print(f"❌ Failed to append to historicalData.json: {e}")
+
     # 3. Git 자동 업로드
     try:
         print("\n☁️ Pushing to GitHub...")
@@ -307,6 +350,8 @@ def save_and_push_to_github():
             return result
 
         run_git(["add", file_path])
+        if os.path.exists(frontend_data_path):
+            run_git(["add", frontend_data_path])
         
         # 변경사항이 있을 때만 커밋
         status = run_git(["status", "--porcelain"])

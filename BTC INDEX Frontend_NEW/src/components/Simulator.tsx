@@ -65,6 +65,7 @@ interface SimulatorProps {
     z: number;
     ma: number;
     s: number;
+    date?: string;
   };
 }
 
@@ -76,10 +77,16 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
   // Default indicators if not provided (fallback)
   // We use the last available data point as the "current" state if none is provided
   const lastDataPoint = HISTORICAL_DATA[HISTORICAL_DATA.length - 1];
-  const indicators = currentIndicators || {
+  const indicators = currentIndicators ? {
+    z: currentIndicators.z,
+    ma: currentIndicators.ma,
+    s: currentIndicators.s,
+    date: currentIndicators.date || new Date().toISOString()
+  } : {
     z: lastDataPoint.z,
     ma: lastDataPoint.ma,
-    s: lastDataPoint.s
+    s: lastDataPoint.s,
+    date: lastDataPoint.d
   };
 
   useEffect(() => {
@@ -164,7 +171,33 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
       }
 
       // Calculate multiplier (Future Price / Historical Price)
-      return closestFuturePoint.p / item.point.p;
+      const rawMultiplier = closestFuturePoint.p / item.point.p;
+
+      // Apply Logarithmic Diminishing Returns based on Price ratio (Proxy for Market Cap ratio assuming relatively stable supply growth compared to price delta)
+      // dimFactor = log(Historical Price) / log(Current Price) 
+      // This dynamically scales down historical monster runs based on how much larger the market is today
+      let dimFactor = 1.0;
+      if (lastDataPoint.p > item.point.p && item.point.p > 0) {
+        // Normalize to a baseline to prevent extreme aggressive cuts
+        // We use Math.log10 for intuitive scaling
+        const logHist = Math.log10(item.point.p);
+        const logCurr = Math.log10(lastDataPoint.p);
+
+        if (logCurr > logHist) {
+          dimFactor = logHist / logCurr;
+
+          // Apply a conservative dampener so we don't scale it down TOO aggressively if it's super old
+          // Max penalty is 0.35x (65% reduction)
+          dimFactor = Math.max(0.35, dimFactor);
+        }
+      }
+
+      if (rawMultiplier > 1) {
+        return 1 + ((rawMultiplier - 1) * dimFactor);
+      } else {
+        const downside = 1 - rawMultiplier;
+        return 1 - (downside * dimFactor);
+      }
     });
 
     let multiplier = 1;
@@ -215,7 +248,33 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
       histIndices.forEach((hIdx, i) => {
         const idx = hIdx + w;
         if (idx >= 0 && idx < HISTORICAL_DATA.length) {
-          const normalized = ((HISTORICAL_DATA[idx].p / HISTORICAL_DATA[hIdx].p) - 1) * 100;
+          const rawMultiplier = HISTORICAL_DATA[idx].p / HISTORICAL_DATA[hIdx].p;
+          const histPriceObj = HISTORICAL_DATA[hIdx];
+
+          // Apply same Logarithmic Diminishing Returns to the visual chart lines
+          let dimFactor = 1.0;
+          if (lastDataPoint.p > histPriceObj.p && histPriceObj.p > 0) {
+            const logHist = Math.log10(histPriceObj.p);
+            const logCurr = Math.log10(lastDataPoint.p);
+            if (logCurr > logHist) {
+              dimFactor = Math.max(0.35, logHist / logCurr);
+            }
+          }
+
+          let normalized = 0;
+          if (w >= 0) {
+            // Apply factor only to future projection part of the chart
+            if (rawMultiplier > 1) {
+              normalized = ((rawMultiplier - 1) * dimFactor) * 100;
+            } else {
+              const downside = 1 - rawMultiplier;
+              normalized = -(downside * dimFactor) * 100;
+            }
+          } else {
+            // Past chart portion remains visually actual to show how we got here
+            normalized = (rawMultiplier - 1) * 100;
+          }
+
           dataPoint[`hist${i + 1}`] = normalized;
 
           if (w >= 0) {
