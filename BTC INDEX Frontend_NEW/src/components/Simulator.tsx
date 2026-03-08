@@ -645,7 +645,7 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
             </div>
 
             {/* Chart Legend */}
-            <div className="mt-3 flex flex-col sm:flex-row gap-4 justify-start items-center bg-slate-900/40 rounded-xl py-2 px-4 border border-white/5 w-full">
+            <div className="mt-3 flex flex-col sm:flex-row gap-x-4 gap-y-2 justify-start items-start sm:items-center bg-slate-900/40 rounded-xl py-2 px-4 border border-white/5 w-fit">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-0.5 bg-white shadow-[0_0_4px_rgba(255,255,255,0.5)]"></div>
                 <span className="text-[11px] font-medium text-slate-300">현재 비트코인 가격 궤적 (최근 흐름)</span>
