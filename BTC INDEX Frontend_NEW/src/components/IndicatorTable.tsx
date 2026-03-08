@@ -56,7 +56,20 @@ const INDICATOR_DETAILS: Record<string, { meaning: string; interpretation: strin
 };
 
 const renderProgressBar = (name: string, valueStr: string | number) => {
-  const value = typeof valueStr === 'string' ? parseFloat(valueStr.replace(/[^0-9.-]/g, '')) : valueStr;
+  let value = 0;
+  if (typeof valueStr === 'string') {
+    if (name === 'Fear & Greed') {
+      value = parseFloat(valueStr.split('/')[0]);
+    } else if (name === '200 Week MA') {
+      const diffStr = valueStr.replace(/[^0-9.-]/g, '');
+      value = (parseFloat(diffStr) / 100) + 1;
+    } else {
+      value = parseFloat(valueStr.replace(/[^0-9.-]/g, ''));
+    }
+  } else {
+    value = valueStr as number;
+  }
+
   if (isNaN(value)) return null;
 
   let min = 0, max = 100, safe = 0, danger = 100;
@@ -101,7 +114,7 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
   }
 
   return (
-    <div className="w-full mt-1.5 hidden sm:block opacity-80 group-hover:opacity-100 transition-opacity">
+    <div className="w-full mt-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
       <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden flex shadow-inner">
         <div
           className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r ${colorClass}`}
