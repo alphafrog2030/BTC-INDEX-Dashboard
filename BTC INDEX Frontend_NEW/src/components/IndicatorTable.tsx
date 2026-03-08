@@ -63,6 +63,9 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
     } else if (name === '200 Week MA') {
       const diffStr = valueStr.replace(/[^0-9.-]/g, '');
       value = (parseFloat(diffStr) / 100) + 1;
+    } else if (name === 'Funding Rate') {
+      const diffStr = valueStr.replace(/[^0-9.-]/g, '');
+      value = parseFloat(diffStr) / 100;
     } else {
       value = parseFloat(valueStr.replace(/[^0-9.-]/g, ''));
     }
@@ -94,7 +97,7 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
       min = 0.95; max = 1.05; safe = 1.00; danger = 1.02;
       break;
     case 'Funding Rate':
-      min = -0.02; max = 0.06; safe = 0.01; danger = 0.04;
+      min = -0.05; max = 0.15; safe = 0.01; danger = 0.05;
       break;
     case 'Fear & Greed':
       min = 0; max = 100; safe = 40; danger = 75;
