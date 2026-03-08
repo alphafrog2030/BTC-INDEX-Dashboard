@@ -108,9 +108,9 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
           style={{ width: `${percent}%` }}
         />
       </div>
-      <div className="flex justify-between text-[8px] text-slate-500 mt-0.5 font-mono px-0.5">
-        <span>{min}</span>
-        <span>{max}</span>
+      <div className="flex justify-between text-[9px] sm:text-[10px] text-slate-500 mt-1 font-bold px-0.5">
+        <span className="text-green-500/80">매수 구간</span>
+        <span className="text-red-500/80">매도 구간</span>
       </div>
     </div>
   );
@@ -131,13 +131,13 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
     <div className="overflow-hidden glass-panel rounded-2xl">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-800 bg-slate-900/40">
-            <th className="p-3 sm:p-4 font-semibold">Indicator <span className="text-[10px] font-normal text-slate-500 normal-case ml-1 hidden sm:inline">(Click for Info)</span></th>
-            <th className="p-3 sm:p-4 font-semibold hidden sm:table-cell text-right">Weight</th>
-            <th className="p-3 sm:p-4 font-semibold whitespace-nowrap text-right">Value</th>
-            <th className="p-3 sm:p-4 font-semibold text-center hidden sm:table-cell">Raw</th>
-            <th className="p-3 sm:p-4 font-semibold text-center hidden md:table-cell">W. Score</th>
-            <th className="p-3 sm:p-4 font-semibold text-right">Signal</th>
+          <tr className="text-slate-400 text-[10px] sm:text-xs tracking-wider border-b border-slate-800 bg-slate-900/40">
+            <th className="p-3 sm:p-4 font-bold border-r border-slate-800/50">지표명 <span className="text-[10px] sm:text-[11px] font-normal text-slate-500 normal-case ml-1 hidden sm:inline">(클릭 시 가이드)</span></th>
+            <th className="p-3 sm:p-4 font-bold hidden sm:table-cell text-right border-r border-slate-800/50">가중치</th>
+            <th className="p-3 sm:p-4 font-bold whitespace-nowrap text-right border-r border-slate-800/50">값</th>
+            <th className="p-3 sm:p-4 font-bold text-center hidden sm:table-cell border-r border-slate-800/50">개별점수(0~10)</th>
+            <th className="p-3 sm:p-4 font-bold text-center hidden md:table-cell border-r border-slate-800/50">가중점수</th>
+            <th className="p-3 sm:p-4 font-bold text-right">시그널</th>
           </tr>
         </thead>
         <tbody className="text-slate-200 divide-y divide-slate-800/50">
@@ -149,10 +149,10 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
               >
                 <td className="p-2 sm:p-4 font-medium max-w-[130px] sm:max-w-none break-words">
                   <div className="flex items-center gap-1.5 sm:gap-3">
-                    <div className={`p-1 sm:p-1.5 rounded-md transition-colors shrink-0 ${expandedRow === idx ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'}`}>
-                      {expandedRow === idx ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />}
+                    <div className={`p-1.5 sm:p-2 rounded-md transition-colors shrink-0 ${expandedRow === idx ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'}`}>
+                      {expandedRow === idx ? <ChevronUp className="w-3.5 h-3.5 sm:w-5 sm:h-5" /> : <ChevronDown className="w-3.5 h-3.5 sm:w-5 sm:h-5" />}
                     </div>
-                    <span className={`font-semibold tracking-wide text-[11px] sm:text-base leading-tight ${expandedRow === idx ? 'text-cyan-400' : 'text-slate-200'}`}>{ind.name}</span>
+                    <span className={`font-bold tracking-wide text-[13px] sm:text-lg leading-tight ${expandedRow === idx ? 'text-cyan-400' : 'text-slate-200'}`}>{ind.name}</span>
                     {SOURCE_URLS[ind.name] && (
                       <a
                         href={SOURCE_URLS[ind.name]}
@@ -170,7 +170,7 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                 <td className="p-2 sm:p-4 text-slate-400 hidden sm:table-cell text-right font-mono text-sm">{ind.weight}%</td>
                 <td className="p-2 sm:p-4 whitespace-nowrap text-right">
                   <div className="flex flex-col items-end w-full">
-                    <span className="font-mono text-cyan-400 text-xs sm:text-base font-semibold">{ind.currentValue}</span>
+                    <span className="font-mono text-cyan-400 text-sm sm:text-lg font-bold">{ind.currentValue}</span>
                     <div className="w-24 sm:w-32">
                       {renderProgressBar(ind.name, ind.currentValue)}
                     </div>

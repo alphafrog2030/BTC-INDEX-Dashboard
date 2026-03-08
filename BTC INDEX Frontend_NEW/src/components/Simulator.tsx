@@ -379,11 +379,86 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
         </div>
       </div>
 
-      {/* 2. Projection Cards */}
-      <div className="space-y-4 max-w-5xl mx-auto">
-        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest pl-1 mb-3">
-          {investmentPeriod >= 12 ? `${investmentPeriod / 12}년` : `${investmentPeriod}개월`} 뒤 예상 자산 가치
+      {/* 4. Similarity Analysis (Moved up from bottom) */}
+      <div className="glass-panel p-4 md:p-5 rounded-2xl relative overflow-hidden">
+        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <Info className="w-4 h-4 text-cyan-400" />
+          현재 시장 위치 메타데이터
         </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 relative z-10">
+          <div className="space-y-3">
+            <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-slate-400 text-sm font-medium">MVRV Z-Score Tracker</span>
+                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">{indicators.z.toFixed(2)}</span>
+              </div>
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ${indicators.z >= 3.0
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                    : indicators.z < 1.0
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                      : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                    }`}
+                  style={{
+                    // Map -0.5 to 0%, 7.0 to 100%
+                    width: `${Math.min(Math.max(((indicators.z - (-0.5)) / 7.5) * 100, 0), 100)}%`
+                  }}
+                />
+              </div>
+              <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono px-1">
+                <span>-0.5 (바닥)</span>
+                <span>1.0 (안전)</span>
+                <span>3.0 (경계)</span>
+                <span>7.0 (광기)</span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-slate-400 text-sm font-medium">200주 MA 이격률</span>
+                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">
+                  {indicators.ma >= 1 ? `+${((indicators.ma - 1) * 100).toFixed(0)}% (이평선 위)` : `${((indicators.ma - 1) * 100).toFixed(0)}% (이평선 아래)`}
+                </span>
+              </div>
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ${indicators.ma >= 2.5
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                    : indicators.ma < 1.5
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                      : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                    }`}
+                  style={{
+                    // Map 0.5x to 0%, 5.0x to 100%
+                    width: `${Math.min(Math.max(((indicators.ma - 0.5) / 4.5) * 100, 0), 100)}%`
+                  }}
+                />
+              </div>
+              <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono px-1">
+                <span>0.5x (바닥)</span>
+                <span>1.5x (안전)</span>
+                <span>2.5x (경계)</span>
+                <span>5.0x (광기)</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-900/60 rounded-xl p-4 md:p-5 flex flex-col justify-center border border-white/5 shadow-inner h-full">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700/50 pb-2">Logarithmic Scaling Applied</h4>
+            <p className="text-sm text-slate-300 leading-relaxed break-keep">
+              현재 비트코인의 거대한 시가총액을 고려하여 과거의 극단적인 상승률({`<`}2020년 이전)에 <span className="font-bold text-cyan-400">Log10 기반 Diminishing Returns (수익률 체감 팩터)</span>를 동적으로 적용하여 현실적인 미래 가치를 보정했습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Projection Cards - Now Grouped */}
+      <div className="glass-panel p-6 sm:p-8 space-y-6 max-w-5xl mx-auto rounded-3xl border border-cyan-500/20 shadow-[0_0_40px_rgba(6,182,212,0.1)] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-500"></div>
+        <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 tracking-tight text-center mb-6">
+          {investmentPeriod >= 12 ? `${investmentPeriod / 12}년` : `${investmentPeriod}개월`} 뒤 예상 자산 가치
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {/* Bear Case */}
@@ -461,75 +536,77 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
       </div>
 
       {/* 3. Fractal Chart Section */}
-      {similarPeriods.length > 0 && (
-        <div className="glass-panel p-4 sm:p-6 rounded-2xl relative">
-          <div className="mb-6 px-2 sm:px-0">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2 tracking-wide">
-              <TrendingUp className="w-5 h-5 text-cyan-400 shrink-0" />
-              온체인 프랙탈 분석 도표
-            </h3>
-            <p className="text-xs text-slate-400 mt-2 font-medium">
-              현재의 가격 궤적(흰색)이 미래에 어떤 형태(하늘색)로 진행될지, 과거 유사 시점들의 데이터 세트 라인을 기반으로 시각화합니다.
-            </p>
+      {
+        similarPeriods.length > 0 && (
+          <div className="glass-panel p-4 sm:p-6 rounded-2xl relative">
+            <div className="mb-6 px-2 sm:px-0">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2 tracking-wide">
+                <TrendingUp className="w-5 h-5 text-cyan-400 shrink-0" />
+                온체인 프랙탈 분석 도표
+              </h3>
+              <p className="text-xs text-slate-400 mt-2 font-medium">
+                현재의 가격 궤적(흰색)이 미래에 어떤 형태(하늘색)로 진행될지, 과거 유사 시점들의 데이터 세트 라인을 기반으로 시각화합니다.
+              </p>
+            </div>
+
+            <div className="h-[400px] w-full mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
+                  <defs>
+                    <linearGradient id="colorAvgFuture" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0.8} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <XAxis
+                    dataKey="weekOffset"
+                    stroke="#64748b"
+                    tick={{ fontSize: 11, fill: '#94a3b8' }}
+                    tickFormatter={(val) => {
+                      if (val === 0) return 'Today';
+                      const m = Math.round(val / 4.33);
+                      return m === 0 ? `${val}W` : (m > 0 ? `+${m}M` : `${m}M`);
+                    }}
+                    minTickGap={20}
+                    axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    stroke="#64748b"
+                    tick={{ fontSize: 11, fill: '#94a3b8' }}
+                    tickFormatter={(val) => `${val > 0 ? '+' : ''}${val}%`}
+                    domain={['auto', 'auto']}
+                    width={45}
+                    axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                    tickLine={false}
+                  />
+                  <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
+                  <ReferenceLine x={0} stroke="rgba(255,255,255,0.2)" strokeWidth={1} strokeDasharray="5 5" />
+                  <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+
+                  {/* Historical Lines */}
+                  {similarPeriods[0] && (
+                    <Line type="monotone" dataKey="hist1" name={similarPeriods[0].point.d} stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 4" dot={false} opacity={0.3} />
+                  )}
+                  {similarPeriods[1] && (
+                    <Line type="monotone" dataKey="hist2" name={similarPeriods[1].point.d} stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 4" dot={false} opacity={0.3} />
+                  )}
+                  {similarPeriods[2] && (
+                    <Line type="monotone" dataKey="hist3" name={similarPeriods[2].point.d} stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 4" dot={false} opacity={0.3} />
+                  )}
+
+                  {/* Current Trajectory */}
+                  <Line type="monotone" dataKey="current" name="현재 궤적" stroke="#ffffff" strokeWidth={3} dot={false} style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.5))' }} />
+
+                  {/* Average Future Trajectory */}
+                  <Line type="monotone" dataKey="avgFuture" name="미래 예상치" stroke="url(#colorAvgFuture)" strokeWidth={4} dot={false} style={{ filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.6))' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-
-          <div className="h-[400px] w-full mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
-                <defs>
-                  <linearGradient id="colorAvgFuture" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0.8} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis
-                  dataKey="weekOffset"
-                  stroke="#64748b"
-                  tick={{ fontSize: 11, fill: '#94a3b8' }}
-                  tickFormatter={(val) => {
-                    if (val === 0) return 'Today';
-                    const m = Math.round(val / 4.33);
-                    return m === 0 ? `${val}W` : (m > 0 ? `+${m}M` : `${m}M`);
-                  }}
-                  minTickGap={20}
-                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                  tickLine={false}
-                />
-                <YAxis
-                  stroke="#64748b"
-                  tick={{ fontSize: 11, fill: '#94a3b8' }}
-                  tickFormatter={(val) => `${val > 0 ? '+' : ''}${val}%`}
-                  domain={['auto', 'auto']}
-                  width={45}
-                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                  tickLine={false}
-                />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
-                <ReferenceLine x={0} stroke="rgba(255,255,255,0.2)" strokeWidth={1} strokeDasharray="5 5" />
-                <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
-
-                {/* Historical Lines */}
-                {similarPeriods[0] && (
-                  <Line type="monotone" dataKey="hist1" name={similarPeriods[0].point.d} stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 4" dot={false} opacity={0.3} />
-                )}
-                {similarPeriods[1] && (
-                  <Line type="monotone" dataKey="hist2" name={similarPeriods[1].point.d} stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 4" dot={false} opacity={0.3} />
-                )}
-                {similarPeriods[2] && (
-                  <Line type="monotone" dataKey="hist3" name={similarPeriods[2].point.d} stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 4" dot={false} opacity={0.3} />
-                )}
-
-                {/* Current Trajectory */}
-                <Line type="monotone" dataKey="current" name="현재 궤적" stroke="#ffffff" strokeWidth={3} dot={false} style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.5))' }} />
-
-                {/* Average Future Trajectory */}
-                <Line type="monotone" dataKey="avgFuture" name="미래 예상치" stroke="url(#colorAvgFuture)" strokeWidth={4} dot={false} style={{ filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.6))' }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
+        )
+      }
 
       {/* 4. Similarity Analysis */}
       <div className="glass-panel p-4 md:p-5 rounded-2xl relative overflow-hidden">
@@ -548,10 +625,10 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
               <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ${indicators.z >= 3.0
-                      ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
-                      : indicators.z < 1.0
-                        ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
-                        : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                    : indicators.z < 1.0
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                      : 'bg-gradient-to-r from-yellow-500 to-orange-400'
                     }`}
                   style={{
                     // Map -0.5 to 0%, 7.0 to 100%
@@ -645,6 +722,6 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
           과거의 패턴이 미래의 수익을 100% 보장하지는 않습니다.
         </p>
       </div>
-    </div>
+    </div >
   );
 }

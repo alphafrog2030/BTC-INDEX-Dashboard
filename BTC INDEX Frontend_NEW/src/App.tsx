@@ -156,7 +156,7 @@ export default function App() {
             <div className="prose prose-invert prose-cyan max-w-none">
               <ReactMarkdown
                 components={{
-                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 mb-8 mt-4 pb-4 border-b border-slate-700/50 tracking-tight flex items-center gap-3" {...props} />,
+                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 mb-8 mt-4 pb-4 tracking-tight flex items-center gap-3" {...props} />,
                   h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-6 mt-10 flex items-center gap-2" {...props} />,
                   h3: ({ node, ...props }) => <h3 className="text-sm font-bold bg-slate-900/60 inline-flex items-center px-4 py-2 rounded-lg text-cyan-300 mb-4 mt-8 border border-white/5 shadow-inner" {...props} />,
                   p: ({ node, ...props }) => <p className="mb-4 text-sm sm:text-base leading-relaxed text-slate-300 break-keep" {...props} />,
@@ -181,7 +181,7 @@ export default function App() {
             <div className="prose prose-invert prose-indigo max-w-none">
               <ReactMarkdown
                 components={{
-                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-8 mt-4 pb-4 border-b border-slate-700/50 tracking-tight flex items-center gap-3" {...props} />,
+                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-8 mt-4 pb-4 tracking-tight flex items-center gap-3" {...props} />,
                   h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-6 mt-10 flex items-center gap-2" {...props} />,
                   h3: ({ node, ...props }) => <h3 className="text-sm font-bold bg-slate-900/60 inline-flex items-center px-4 py-2 rounded-lg text-indigo-300 mb-4 mt-8 border border-white/5 shadow-inner" {...props} />,
                   p: ({ node, ...props }) => <p className="mb-4 text-sm sm:text-base leading-relaxed text-slate-300 break-keep" {...props} />,
@@ -206,7 +206,7 @@ export default function App() {
             <div className="prose prose-invert prose-teal max-w-none">
               <ReactMarkdown
                 components={{
-                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400 mb-8 mt-4 pb-4 border-b border-slate-700/50 tracking-tight flex items-center gap-3" {...props} />,
+                  h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400 mb-8 mt-4 pb-4 tracking-tight flex items-center gap-3" {...props} />,
                   h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-6 mt-10 flex items-center gap-2" {...props} />,
                   h3: ({ node, ...props }) => <h3 className="text-sm font-bold bg-slate-900/60 inline-flex items-center px-4 py-2 rounded-lg text-teal-300 mb-4 mt-8 border border-white/5 shadow-inner" {...props} />,
                   p: ({ node, ...props }) => <p className="mb-4 text-sm sm:text-base leading-relaxed text-slate-300 break-keep" {...props} />,
@@ -234,9 +234,8 @@ export default function App() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeIn">
         {/* Left Column: Score & Summary */}
         <div className="lg:col-span-1 space-y-6">
-          {/* Current Status Block (Moved Up) */}
           <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">Current Status</h3>
+            <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">Bitcoin 가격</h3>
             <div className="text-2xl font-bold text-white mb-1">
               {currentReport.btcPrice ? `$${currentReport.btcPrice.toLocaleString()}` : "Price: N/A"}
             </div>
@@ -258,11 +257,10 @@ export default function App() {
           {/* Score Gauge */}
           <ScoreGauge score={currentReport.totalScore} />
 
-          {/* Scoring Guide (Replaced Key Weights) */}
           <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
             <div className="flex items-center gap-2 text-cyan-400 mb-3">
               <Info className="w-5 h-5" />
-              <span className="font-bold">Scoring Guide (매매 기준)</span>
+              <span className="font-bold">점수 기준</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
@@ -295,7 +293,7 @@ export default function App() {
             <div className="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
               <h2 className="font-bold text-white flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-cyan-400" />
-                지표 현황 및 분석
+                지표 현황 및 상태
               </h2>
             </div>
             <IndicatorTable indicators={currentReport.indicators} />
@@ -303,21 +301,23 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
-              <h4 className="text-slate-400 text-sm font-bold mb-2">Buy Zones</h4>
+              <h4 className="text-slate-400 text-sm font-bold mb-2">매수 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
-                <li>MVRV Z-Score ≤ 0.1</li>
-                <li>Puell Multiple ≤ 0.5</li>
-                <li>NUPL &lt; 0</li>
-                <li>Price touch 200WMA</li>
+                <li>MVRV Z-Score: <span className="text-green-400 font-mono">0.1 이하</span></li>
+                <li>Puell Multiple: <span className="text-green-400 font-mono">0.5 이하</span></li>
+                <li>NUPL: <span className="text-green-400 font-mono">0 미만</span></li>
+                <li>가격이 <span className="text-green-400 font-mono">200주 MA</span> 도달 시</li>
+                <li>Funding Rate: <span className="text-green-400 font-mono">음수 유지</span></li>
               </ul>
             </div>
             <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
-              <h4 className="text-slate-400 text-sm font-bold mb-2">Sell Zones</h4>
+              <h4 className="text-slate-400 text-sm font-bold mb-2">매도 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
-                <li>Total Score &lt; 30</li>
-                <li>MVRV Z-Score &gt; 7</li>
-                <li>NUPL &gt; 0.75</li>
-                <li>Greed Extreme</li>
+                <li>MVRV Z-Score: <span className="text-red-400 font-mono">7.0 초과</span></li>
+                <li>Puell Multiple: <span className="text-red-400 font-mono">4.0 초과</span></li>
+                <li>NUPL: <span className="text-red-400 font-mono">0.75 초과</span></li>
+                <li>Fear & Greed: <span className="text-red-400 font-mono">극단적 탐욕</span> (80 이상)</li>
+                <li>Funding Rate: <span className="text-red-400 font-mono">0.05% 이상 지속</span></li>
               </ul>
             </div>
           </div>
