@@ -298,14 +298,24 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
   return (
     <div className="space-y-8 animate-fadeIn">
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+      <div className="mb-8 bg-slate-800/50 p-6 rounded-2xl border border-white/5">
+        <h2 className="text-2xl font-bold text-white mb-3 flex items-center gap-3">
           <History className="w-6 h-6 text-cyan-400" />
-          프랙탈 시뮬레이션 차트
+          비트코인 미래 궤적 예측기
         </h2>
-        <p className="text-slate-400 text-sm leading-relaxed max-w-3xl">
-          과거 유사 시점의 차트를 평균화 하여, 현재시점을 기준으로 과거 {investmentPeriod >= 12 ? `${investmentPeriod / 12}년` : `${investmentPeriod}개월`}의 일치된 궤적과 미래 예상 궤적을 렌더링합니다.
+        <p className="text-slate-300 text-sm leading-relaxed max-w-4xl mb-4">
+          12년간의 비트코인 빅데이터를 탐색하여 현재 시장과 똑 닮은 과거의 쌍둥이 구간들을 찾아냅니다. 막연한 희망 회로가 아닌 냉정한 데이터에 기반하여, 내 자본의 미래 가치를 3가지 시나리오(최상/평균/최악)로 미리 시뮬레이션해 보세요.
         </p>
+
+        <div className="bg-slate-900/50 rounded-lg p-4 border border-cyan-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <Info className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-bold text-cyan-400 tracking-wider">알고리즘 분석 원리</span>
+          </div>
+          <p className="text-slate-400 text-xs leading-relaxed">
+            BTC 온체인 지표(MVRV, 200W MA)와 반감기 주기를 분석하여 현재와 가장 유사한 역사적 장세를 패턴 매칭합니다. 시가총액 성장에 따른 수익률 둔화(Diminishing) 알고리즘을 적용해, 향후 현실적인 주가 궤적과 기대 수익률을 과학적으로 프로젝션합니다.
+          </p>
+        </div>
       </div>
 
       {/* 1. Input Section */}
