@@ -85,7 +85,7 @@ function calculateScore(name: string, value: number, price: number): { score: nu
   let signal: 'BUY' | 'NEUTRAL' | 'SELL' = 'NEUTRAL';
 
   if (name === 'MVRV Z-Score') {
-    if (value <= 0.1) { score = 10; signal = 'BUY'; }
+    if (value <= 0.0) { score = 10; signal = 'BUY'; }
     else if (value <= 1.0) { score = 8; signal = 'BUY'; }
     else if (value >= 7.0) { score = 0; signal = 'SELL'; }
     else if (value >= 3.0) { score = 2; signal = 'SELL'; }
@@ -93,34 +93,53 @@ function calculateScore(name: string, value: number, price: number): { score: nu
   }
   else if (name === 'Puell Multiple') {
     if (value <= 0.5) { score = 10; signal = 'BUY'; }
-    else if (value <= 0.8) { score = 7; signal = 'BUY'; }
+    else if (value <= 1.0) { score = 8; signal = 'BUY'; }
     else if (value >= 4.0) { score = 0; signal = 'SELL'; }
-    else if (value >= 2.5) { score = 3; signal = 'SELL'; }
+    else if (value >= 2.5) { score = 2; signal = 'SELL'; }
     else score = 5;
   }
   else if (name === 'NUPL') {
     if (value < 0) { score = 10; signal = 'BUY'; }
-    else if (value < 0.25) { score = 8; signal = 'BUY'; }
-    else if (value > 0.75) { score = 0; signal = 'SELL'; }
-    else if (value > 0.5) { score = 3; signal = 'SELL'; }
+    else if (value <= 0.25) { score = 8; signal = 'BUY'; }
+    else if (value >= 0.75) { score = 0; signal = 'SELL'; }
+    else if (value >= 0.60) { score = 2; signal = 'SELL'; }
     else score = 5;
   }
   else if (name === '200 Week MA') {
     if (value === 0) return { score: 5, signal: 'NEUTRAL' }; // Avoid div by zero
     const ratio = price / value;
     if (ratio <= 1.0) { score = 10; signal = 'BUY'; }
-    else if (ratio <= 1.3) { score = 8; signal = 'BUY'; }
-    else if (ratio >= 3.0) { score = 0; signal = 'SELL'; }
+    else if (ratio <= 1.5) { score = 8; signal = 'BUY'; }
+    else if (ratio >= 5.0) { score = 0; signal = 'SELL'; }
+    else if (ratio >= 2.5) { score = 2; signal = 'SELL'; }
     else score = 5;
   }
   else if (name === 'Fear & Greed') {
-    if (value <= 20) { score = 9; signal = 'BUY'; }
-    else if (value >= 80) { score = 1; signal = 'SELL'; }
+    if (value <= 20) { score = 10; signal = 'BUY'; }
+    else if (value <= 40) { score = 8; signal = 'BUY'; }
+    else if (value >= 80) { score = 0; signal = 'SELL'; }
+    else if (value >= 75) { score = 2; signal = 'SELL'; }
     else score = 5;
   }
   else if (name === 'Funding Rate') {
-    if (value < 0) { score = 8; signal = 'BUY'; } // Negative funding is bullish (shorts paying longs)
-    else if (value > 0.05) { score = 2; signal = 'SELL'; } // High positive funding is bearish
+    if (value <= -0.01) { score = 10; signal = 'BUY'; }
+    else if (value <= 0.01) { score = 8; signal = 'BUY'; }
+    else if (value >= 0.10) { score = 0; signal = 'SELL'; }
+    else if (value >= 0.05) { score = 2; signal = 'SELL'; }
+    else score = 5;
+  }
+  else if (name === 'Reserve Risk') {
+    if (value <= 0.002) { score = 10; signal = 'BUY'; }
+    else if (value <= 0.003) { score = 8; signal = 'BUY'; }
+    else if (value >= 0.02) { score = 0; signal = 'SELL'; }
+    else if (value >= 0.015) { score = 2; signal = 'SELL'; }
+    else score = 5;
+  }
+  else if (name === 'SOPR') {
+    if (value <= 0.98) { score = 10; signal = 'BUY'; }
+    else if (value <= 1.00) { score = 8; signal = 'BUY'; }
+    else if (value >= 1.05) { score = 0; signal = 'SELL'; }
+    else if (value >= 1.02) { score = 2; signal = 'SELL'; }
     else score = 5;
   }
 
