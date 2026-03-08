@@ -543,13 +543,27 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
             <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-slate-400 text-sm font-medium">MVRV Z-Score Tracker</span>
-                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">{indicators.z.toFixed(2)}</span>
+                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">{indicators.z.toFixed(2)}</span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex">
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
                 <div
-                  className={`h-full rounded-full transition-all duration-1000 ${indicators.z > 5 ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : indicators.z < 1 ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'bg-gradient-to-r from-yellow-500 to-orange-400'}`}
-                  style={{ width: `${Math.min(Math.max((indicators.z / 8) * 100, 0), 100)}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ${indicators.z >= 3.0
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                      : indicators.z < 1.0
+                        ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                        : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                    }`}
+                  style={{
+                    // Map -0.5 to 0%, 7.0 to 100%
+                    width: `${Math.min(Math.max(((indicators.z - (-0.5)) / 7.5) * 100, 0), 100)}%`
+                  }}
                 />
+              </div>
+              <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono px-1">
+                <span>-0.5 (바닥)</span>
+                <span>1.0 (안전)</span>
+                <span>3.0 (경계)</span>
+                <span>7.0 (광기)</span>
               </div>
             </div>
 
@@ -566,10 +580,10 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
                 {/* Danger zone marker (2.5+) -> 44.4%+ */}
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ${indicators.ma >= 2.5
-                      ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
-                      : indicators.ma < 1.5
-                        ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
-                        : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                    : indicators.ma < 1.5
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                      : 'bg-gradient-to-r from-yellow-500 to-orange-400'
                     }`}
                   style={{
                     // Map 0.5x to 0%, 5.0x to 100%
