@@ -165,8 +165,6 @@ export const generateKoreanAnalysis = (
   const ma200 = indicators.find((i) => i.name === "200 Week MA");
   const fearGreed = indicators.find((i) => i.name === "Fear & Greed");
   const funding = indicators.find((i) => i.name === "Funding Rate");
-  const reserve = indicators.find((i) => i.name === "Reserve Risk");
-  const sopr = indicators.find((i) => i.name === "SOPR");
 
   // Helper to format numbers
   const fmt = (val: number | string) => (typeof val === 'number' ? val.toLocaleString(undefined, { maximumFractionDigits: 2 }) : val);
@@ -259,16 +257,7 @@ export const generateKoreanAnalysis = (
     breakdownText += card;
   }
 
-  // Reserve Risk Analysis
-  if (reserve) {
-    let card = `- \`7. Reserve Risk - 현재수치: ${fmt(reserve.currentValue)}\`  \n`;
-    if (reserve.score >= 8) {
-      card += `**상태**: 🟢 매력적 (Attractive)  \n**해석**: 장기 보유자들의 확신은 높은데 가격은 낮은 상태입니다. 매수하기 좋습니다.\n`;
-    } else {
-      card += `**상태**: 🟡 보통  \n**해석**: 리스크 대비 보상이 평범한 수준입니다.\n`;
-    }
-    breakdownText += card;
-  }
+
 
   let risksAndAdvice = `# 💡 투자 인사이트 (Insights)\n\n`;
 

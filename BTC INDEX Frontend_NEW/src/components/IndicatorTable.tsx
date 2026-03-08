@@ -13,8 +13,6 @@ const SOURCE_URLS: Record<string, string> = {
   'Puell Multiple': 'https://en.macromicro.me/series/8112/bitcoin-puell-multiple',
   'NUPL': 'https://en.macromicro.me/series/45910/bitcoin-nupl',
   '200 Week MA': 'https://www.lookintobitcoin.com/charts/200-week-moving-average-heatmap/',
-  'Reserve Risk': 'https://www.lookintobitcoin.com/charts/reserve-risk/',
-  'SOPR': 'https://en.macromicro.me/series/35106/bitcoin-sopr',
   'Funding Rate': 'https://en.macromicro.me/series/21739/bitcoin-perpetual-futures-funding-rate',
   'Fear & Greed': 'https://alternative.me/crypto/fear-and-greed-index/',
 };
@@ -44,14 +42,6 @@ const INDICATOR_DETAILS: Record<string, { meaning: string; interpretation: strin
   'Funding Rate': {
     meaning: '**펀딩비 (Funding Rate)**\n\n선물 시장에서 **롱(매수) 포지션과 숏(매도) 포지션 중 어느 쪽이 더 많은지**를 보여줍니다. 양수(+)면 롱이 많고, 음수(-)면 숏이 많습니다.',
     interpretation: '- **음수 (-) 유지**: **"숏 우세"**. 시장이 하락을 예상하고 베팅 중입니다. 오히려 숏 스퀴즈(급반등)가 일어날 수 있어 매수 관점에서 긍정적일 수 있습니다.\n- **0.01% (기본값)**: 평범한 상태입니다.\n- **0.05% 이상 지속**: **"롱 과열"**. 너도나도 빚내서 매수하고 있다는 뜻입니다. 롱 스퀴즈(급락) 위험이 큽니다.'
-  },
-  'Reserve Risk': {
-    meaning: '**리저브 리스크 (Reserve Risk)**\n\n장기 보유자들의 확신(Confidence) 대비 가격이 매력적인지를 보여줍니다. 가격은 낮은데 장기 보유자들의 확신이 높을 때가 매수 적기입니다.',
-    interpretation: '- **0.002 이하 (초록색 구간)**: **"매수 적기"**. 장기 보유자들은 팔지 않고 버티는데 가격은 낮은 상태입니다.\n- **0.02 이상 (빨간색 구간)**: **"매도 적기"**. 장기 보유자들이 확신을 잃고 매도하기 시작하거나 가격이 너무 높습니다.'
-  },
-  'SOPR': {
-    meaning: '**SOPR (Spent Output Profit Ratio)**\n\n당일 전송된 코인들이 평균적으로 수익을 보고 팔았는지, 손실을 보고 팔았는지를 나타냅니다.',
-    interpretation: '- **1 미만**: **"손절매"**. 사람들이 손해를 보고 팔고 있습니다. 바닥권에서 주로 나타납니다.\n- **1 이상**: **"이익 실현"**. 사람들이 수익을 보고 팔고 있습니다. 상승장에서 지속적으로 나타납니다.'
   }
 };
 
@@ -89,12 +79,6 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
       break;
     case '200 Week MA':
       min = 0.5; max = 5.0; safe = 1.5; danger = 2.5;
-      break;
-    case 'Reserve Risk':
-      min = 0.000; max = 0.025; safe = 0.003; danger = 0.015;
-      break;
-    case 'SOPR':
-      min = 0.95; max = 1.05; safe = 1.00; danger = 1.02;
       break;
     case 'Funding Rate':
       min = -0.05; max = 0.15; safe = 0.01; danger = 0.05;

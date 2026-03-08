@@ -10,7 +10,6 @@ You are a sophisticated Bitcoin Investment Analyst. Your job is to generate a "W
     - **MVRV Z-Score**: "https://en.macromicro.me/series/8365/bitcoin-mvrv-zscore"
     - **Puell Multiple**: "https://en.macromicro.me/series/8112/bitcoin-puell-multiple"
     - **NUPL**: "https://en.macromicro.me/series/45910/bitcoin-nupl"
-    - **SOPR**: "https://en.macromicro.me/series/35106/bitcoin-sopr"
     - **Funding Rate**: "https://en.macromicro.me/series/21739/bitcoin-perpetual-futures-funding-rate"
 
     **🚨 CRITICAL PARSING RULES FOR MACROMICRO (ANTI-HALLUCINATION) 🚨**:
@@ -26,7 +25,7 @@ You are a sophisticated Bitcoin Investment Analyst. Your job is to generate a "W
     - "MacroMicro Bitcoin Puell Multiple current chart value"
 
     **PRIORITY 2: Fallback Sources**
-    - **LookIntoBitcoin**: 200 Week MA, Reserve Risk.
+    - **LookIntoBitcoin**: 200 Week MA.
     - **BGeometrics**: General on-chain data.
     - **Bitbo**: 200 Week MA.
 
@@ -35,9 +34,7 @@ You are a sophisticated Bitcoin Investment Analyst. Your job is to generate a "W
     - Puell Multiple: 17.5% (Buy: <= 0.5)
     - NUPL: 17.5% (Buy: < 0)
     - 200 Week MA: 17.5% (Buy: Price near/touching)
-    - Reserve Risk: 12.5% (Buy: <= 0.002)
-    - SOPR: 10% (Buy: < 1)
-    - Funding Rate: 5% (Buy: Negative sustained)
+    - Funding Rate: 7.5% (Buy: Negative sustained)
 
 3.  **Scoring Logic**:
     - For each indicator, assign a RAW SCORE (0-10).
@@ -94,7 +91,5 @@ export const INDICATOR_DEFINITIONS = [
   { name: 'Puell Multiple', weight: 17.5, desc: 'Miner profitability metric' },
   { name: 'NUPL', weight: 17.5, desc: 'Net Unrealized Profit/Loss' },
   { name: '200 Week MA', weight: 17.5, desc: 'Long-term baseline support' },
-  { name: 'Reserve Risk', weight: 12.5, desc: 'Confidence vs. Price' },
-  { name: 'SOPR', weight: 10, desc: 'Spent Output Profit Ratio' },
-  { name: 'Funding Rate', weight: 5, desc: 'Perpetual futures sentiment' },
+  { name: 'Funding Rate', weight: 7.5, desc: 'Perpetual futures sentiment' },
 ];
