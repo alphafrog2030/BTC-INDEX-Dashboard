@@ -526,16 +526,16 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
       )}
 
       {/* 4. Similarity Analysis */}
-      <div className="glass-panel p-6 rounded-2xl relative overflow-hidden">
-        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">
+      <div className="glass-panel p-4 md:p-5 rounded-2xl relative overflow-hidden">
+        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
           <Info className="w-4 h-4 text-cyan-400" />
           현재 시장 위치 메타데이터
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-          <div className="space-y-5">
-            <div className="p-5 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
-              <div className="flex justify-between items-center mb-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 relative z-10">
+          <div className="space-y-3">
+            <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
+              <div className="flex justify-between items-center mb-2">
                 <span className="text-slate-400 text-sm font-medium">MVRV Z-Score Tracker</span>
                 <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">{indicators.z.toFixed(2)}</span>
               </div>
@@ -547,8 +547,8 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
               </div>
             </div>
 
-            <div className="p-5 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
-              <div className="flex justify-between items-center mb-3">
+            <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
+              <div className="flex justify-between items-center mb-2">
                 <span className="text-slate-400 text-sm font-medium">200주 MA 이격률</span>
                 <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded">{(indicators.ma * 100).toFixed(0)}%</span>
               </div>
@@ -561,18 +561,18 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
             </div>
           </div>
 
-          <div className="bg-slate-900/40 p-5 rounded-xl border border-white/5">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">
+          <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
               유사 과거 패턴 레퍼런스
             </p>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {similarPeriods.length > 0 ? similarPeriods.map((item, idx) => (
-                <li key={idx} className="flex items-center justify-between text-sm bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-lg border border-white/5 group">
+                <li key={idx} className="flex items-center justify-between text-sm bg-white/5 hover:bg-white/10 transition-colors py-2 px-3 rounded-lg border border-white/5 group">
                   <span className="text-cyan-400 font-mono font-medium group-hover:text-cyan-300 transition-colors">{item.point.d}</span>
                   <span className="text-slate-300 text-xs font-bold bg-slate-800 px-2 py-1 rounded-md opacity-80 group-hover:opacity-100">일치율 {Math.round(item.similarity)}%</span>
                 </li>
               )) : (
-                <li className="text-sm text-slate-500 italic p-3 text-center bg-white/5 rounded-lg border-dashed border border-white/10">
+                <li className="text-sm text-slate-500 italic py-2 px-3 text-center bg-white/5 rounded-lg border-dashed border border-white/10">
                   해당 기간을 시뮬레이션할 수 있는 데이터 구조가 부족합니다.
                 </li>
               )}
