@@ -643,6 +643,25 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
                 </LineChart>
               </ResponsiveContainer>
             </div>
+
+            {/* Chart Legend */}
+            <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-center bg-slate-900/40 rounded-xl py-3 px-4 border border-white/5 mx-auto max-w-3xl">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-0.5 bg-white shadow-[0_0_4px_rgba(255,255,255,0.5)]"></div>
+                <span className="text-[11px] font-medium text-slate-300">현재 비트코인 가격 궤적 (최근 흐름)</span>
+              </div>
+              <div className="hidden sm:block w-px h-3 bg-white/10"></div>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-1 bg-gradient-to-r from-cyan-400 to-indigo-500 shadow-[0_0_6px_rgba(6,182,212,0.6)] rounded-full"></div>
+                <span className="text-[11px] font-medium text-slate-300">과거 패턴 기반 {investmentPeriod >= 12 ? `${investmentPeriod / 12}년` : `${investmentPeriod}개월`} 미래 예상치</span>
+              </div>
+              <div className="hidden sm:block w-px h-3 bg-white/10"></div>
+              <div className="flex items-center gap-2">
+                <div className="w-5 border-t-[1.5px] border-dashed border-slate-500 opacity-60"></div>
+                <span className="text-[11px] font-medium text-slate-400">현재와 가장 유사했던 과거 TOP 3 궤적</span>
+              </div>
+            </div>
+
           </div>
         )
       }
