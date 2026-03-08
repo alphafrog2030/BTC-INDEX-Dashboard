@@ -108,9 +108,9 @@ const renderProgressBar = (name: string, valueStr: string | number) => {
           style={{ width: `${percent}%` }}
         />
       </div>
-      <div className="flex justify-between text-[9px] sm:text-[10px] text-slate-500 mt-1 font-bold px-0.5">
-        <span className="text-green-500/80">매수 구간</span>
-        <span className="text-red-500/80">매도 구간</span>
+      <div className="flex justify-between text-[9px] sm:text-[10px] text-slate-500 mt-1 font-bold px-0.5 font-mono">
+        <span>{min}</span>
+        <span>{max}</span>
       </div>
     </div>
   );

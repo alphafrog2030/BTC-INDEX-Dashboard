@@ -169,6 +169,7 @@ export default function App() {
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-cyan-300" {...props} />,
                   code: ({ node, className, children, ...props }: any) => <span className="text-base font-bold text-cyan-400 block mb-2 tracking-wide" {...props}>{children}</span>,
+                  hr: ({ node, ...props }) => <hr className="hidden" {...props} />,
                 }}
               >
                 {currentReport.strategyText}
@@ -194,6 +195,7 @@ export default function App() {
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-indigo-300" {...props} />,
                   code: ({ node, className, children, ...props }: any) => <span className="text-base font-bold text-cyan-400 block mb-2 tracking-wide" {...props}>{children}</span>,
+                  hr: ({ node, ...props }) => <hr className="hidden" {...props} />,
                 }}
               >
                 {currentReport.risksAndAdvice}
@@ -219,6 +221,7 @@ export default function App() {
                   ),
                   strong: ({ node, ...props }) => <strong className="font-bold text-teal-300" {...props} />,
                   code: ({ node, className, children, ...props }: any) => <span className="text-base font-bold text-cyan-400 block mb-2 tracking-wide" {...props}>{children}</span>,
+                  hr: ({ node, ...props }) => <hr className="hidden" {...props} />,
                 }}
               >
                 {currentReport.breakdownText || ""}
