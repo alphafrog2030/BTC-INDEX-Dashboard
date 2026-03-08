@@ -387,67 +387,73 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {/* Bear Case */}
-          <div className="glass-panel p-6 rounded-2xl hover:border-red-500/30 transition-colors group relative overflow-hidden">
+          <div className="glass-panel p-4 md:p-5 rounded-2xl hover:border-red-500/30 transition-colors group relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-red-500/10 transition-colors"></div>
-            <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2 bg-red-500/10 rounded-lg text-red-400 border border-red-500/20">
-                <TrendingDown className="w-5 h-5" />
+            <div>
+              <div className="flex items-center gap-2 mb-3 relative z-10">
+                <div className="p-1.5 bg-red-500/10 rounded-lg text-red-400 border border-red-500/20">
+                  <TrendingDown className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-bold text-slate-300 uppercase tracking-wider">Worst Case</span>
               </div>
-              <span className="text-sm font-bold text-slate-300 uppercase tracking-wider">Worst Case</span>
+              <div className="text-2xl font-bold text-white mb-2 relative z-10 font-mono tracking-tight">
+                {formatCurrency(worstCase)}
+              </div>
+              <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-bold relative z-10 ${worstCase >= investmentAmount ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                {worstCase >= investmentAmount ? '+' : ''}
+                {Math.round(((worstCase - investmentAmount) / investmentAmount) * 100)}% ROI
+              </div>
             </div>
-            <div className="text-2xl font-bold text-white mb-2 relative z-10 font-mono tracking-tight">
-              {formatCurrency(worstCase)}
-            </div>
-            <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-bold relative z-10 ${worstCase >= investmentAmount ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-              {worstCase >= investmentAmount ? '+' : ''}
-              {Math.round(((worstCase - investmentAmount) / investmentAmount) * 100)}% ROI
-            </div>
-            <p className="text-[11px] text-slate-500 mt-4 leading-relaxed relative z-10">
+            <p className="text-[11px] text-slate-500 mt-3 leading-relaxed relative z-10">
               가장 유사했던 과거 시점 중 최악의 성과를 보였던 시나리오입니다.
             </p>
           </div>
 
           {/* Average Case */}
-          <div className="glass-panel p-6 rounded-2xl border-cyan-500/30 hover:border-cyan-400/50 transition-all relative overflow-hidden group shadow-[0_0_30px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transform hover:-translate-y-1">
+          <div className="glass-panel p-4 md:p-5 rounded-2xl border-cyan-500/30 hover:border-cyan-400/50 transition-all relative overflow-hidden group shadow-[0_0_30px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transform hover:-translate-y-1 flex flex-col justify-between">
             <div className="absolute top-0 right-0 bg-gradient-to-r from-indigo-500 to-cyan-500 text-white text-[10px] px-3 py-1 rounded-bl-xl font-bold tracking-widest uppercase shadow-md pointer-events-none z-20">
               Most Likely
             </div>
             <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-full h-full bg-cyan-500/5 rounded-full blur-[60px] pointer-events-none group-hover:bg-cyan-500/10 transition-colors"></div>
 
-            <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20">
-                <TrendingUp className="w-5 h-5" />
+            <div>
+              <div className="flex items-center gap-2 mb-3 relative z-10">
+                <div className="p-1.5 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-bold text-slate-200 uppercase tracking-wider">Avg. Scenario</span>
               </div>
-              <span className="text-sm font-bold text-slate-200 uppercase tracking-wider">Avg. Scenario</span>
+              <div className="text-3xl font-bold text-white mb-2 relative z-10 font-mono tracking-tight">
+                {formatCurrency(avgCase)}
+              </div>
+              <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold relative z-10 ${avgCase >= investmentAmount ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20'}`}>
+                {avgCase >= investmentAmount ? '+' : ''}
+                {Math.round(((avgCase - investmentAmount) / investmentAmount) * 100)}% ROI
+              </div>
             </div>
-            <div className="text-3xl font-bold text-white mb-2 relative z-10 font-mono tracking-tight">
-              {formatCurrency(avgCase)}
-            </div>
-            <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold relative z-10 ${avgCase >= investmentAmount ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20'}`}>
-              {avgCase >= investmentAmount ? '+' : ''}
-              {Math.round(((avgCase - investmentAmount) / investmentAmount) * 100)}% ROI
-            </div>
-            <p className="text-[11px] text-slate-400 mt-4 leading-relaxed relative z-10 font-medium">
+            <p className="text-[11px] text-slate-400 mt-3 leading-relaxed relative z-10 font-medium">
               유사했던 과거 시점들의 실제 평균 수익률을 반영한 기준 예상치.
             </p>
           </div>
 
           {/* Bull Case */}
-          <div className="glass-panel p-6 rounded-2xl hover:border-green-500/30 transition-colors group relative overflow-hidden">
+          <div className="glass-panel p-4 md:p-5 rounded-2xl hover:border-green-500/30 transition-colors group relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-green-500/10 transition-colors"></div>
-            <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2 bg-green-500/10 rounded-lg text-green-400 border border-green-500/20">
-                <TrendingUp className="w-5 h-5" />
+            <div>
+              <div className="flex items-center gap-2 mb-3 relative z-10">
+                <div className="p-1.5 bg-green-500/10 rounded-lg text-green-400 border border-green-500/20">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-bold text-slate-300 uppercase tracking-wider">Best Case</span>
               </div>
-              <span className="text-sm font-bold text-slate-300 uppercase tracking-wider">Best Case</span>
+              <div className="text-2xl font-bold text-white mb-2 relative z-10 font-mono tracking-tight">
+                {formatCurrency(bestCase)}
+              </div>
+              <div className="inline-flex items-center px-2 py-1 rounded text-xs font-bold relative z-10 bg-green-500/10 text-green-400">
+                +{Math.round(((bestCase - investmentAmount) / investmentAmount) * 100)}% ROI
+              </div>
             </div>
-            <div className="text-2xl font-bold text-white mb-2 relative z-10 font-mono tracking-tight">
-              {formatCurrency(bestCase)}
-            </div>
-            <div className="inline-flex items-center px-2 py-1 rounded text-xs font-bold relative z-10 bg-green-500/10 text-green-400">
-              +{Math.round(((bestCase - investmentAmount) / investmentAmount) * 100)}% ROI
-            </div>
-            <p className="text-[11px] text-slate-500 mt-4 leading-relaxed relative z-10">
+            <p className="text-[11px] text-slate-500 mt-3 leading-relaxed relative z-10">
               가장 유사했던 과거 시점 중 최고의 성과를 보였던 시나리오입니다.
             </p>
           </div>
