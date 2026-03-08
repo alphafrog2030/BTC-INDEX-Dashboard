@@ -564,6 +564,14 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
             </p>
           </div>
         </div>
+
+        {/* Logarithmic Scaling Explanation appended under the projection cases */}
+        <div className="mt-6 bg-slate-900/40 rounded-xl p-4 md:p-5 border border-white/5 shadow-inner">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Logarithmic Scaling Applied</h4>
+          <p className="text-sm text-slate-300 leading-relaxed break-keep">
+            현재 비트코인의 거대한 시가총액을 고려하여 과거의 극단적인 상승률({`<`}2020년 이전)에 <span className="font-bold text-cyan-400">Log10 기반 Diminishing Returns (수익률 체감 팩터)</span>를 동적으로 적용하여 현실적인 미래 가치를 보정했습니다.
+          </p>
+        </div>
       </div>
 
       {/* 3. Fractal Chart Section */}
