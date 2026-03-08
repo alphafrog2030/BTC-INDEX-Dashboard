@@ -379,7 +379,7 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
         </div>
       </div>
 
-      {/* 4. Similarity Analysis (Moved up from bottom) */}
+      {/* 4. Similarity Analysis */}
       <div className="glass-panel p-4 md:p-5 rounded-2xl relative overflow-hidden">
         <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
           <Info className="w-4 h-4 text-cyan-400" />
@@ -423,6 +423,9 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
                 </span>
               </div>
               <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
+                {/* Safe zone marker (0.5 to 1.5) -> 0% to 22.2% of the bar assuming 5.0 max */}
+                {/* Neutral zone marker (1.5 to 2.5) -> 22.2% to 44.4% */}
+                {/* Danger zone marker (2.5+) -> 44.4%+ */}
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ${indicators.ma >= 2.5
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
@@ -443,12 +446,40 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
                 <span>5.0x (광기)</span>
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner flex flex-col justify-center items-center">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">단기 추세(60d)</span>
+                <span className={`text-sm font-bold ${indicators.s > 0 ? 'text-green-400' : 'text-red-400'} flex items-center gap-1`}>
+                  {indicators.s > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                  {indicators.s > 0 ? 'Uptrend' : 'Downtrend'}
+                </span>
+              </div>
+              <div className="p-3 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner flex flex-col justify-center items-center">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">반감기 사이클</span>
+                <span className="text-cyan-400 text-sm font-bold font-mono">
+                  D+{getDaysSinceHalving(indicators.date || new Date().toISOString())}일
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="bg-slate-900/60 rounded-xl p-4 md:p-5 flex flex-col justify-center border border-white/5 shadow-inner h-full">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700/50 pb-2">Logarithmic Scaling Applied</h4>
-            <p className="text-sm text-slate-300 leading-relaxed break-keep">
-              현재 비트코인의 거대한 시가총액을 고려하여 과거의 극단적인 상승률({`<`}2020년 이전)에 <span className="font-bold text-cyan-400">Log10 기반 Diminishing Returns (수익률 체감 팩터)</span>를 동적으로 적용하여 현실적인 미래 가치를 보정했습니다.
+
+          <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
+              유사 과거 패턴 레퍼런스
             </p>
+            <ul className="space-y-2">
+              {similarPeriods.length > 0 ? similarPeriods.map((item, idx) => (
+                <li key={idx} className="flex items-center justify-between text-sm bg-white/5 hover:bg-white/10 transition-colors py-2 px-3 rounded-lg border border-white/5 group">
+                  <span className="text-cyan-400 font-mono font-medium group-hover:text-cyan-300 transition-colors">{item.point.d}</span>
+                  <span className="text-slate-300 text-xs font-bold bg-slate-800 px-2 py-1 rounded-md opacity-80 group-hover:opacity-100">일치율 {Math.round(item.similarity)}%</span>
+                </li>
+              )) : (
+                <li className="text-sm text-slate-500 italic py-2 px-3 text-center bg-white/5 rounded-lg border-dashed border border-white/10">
+                  해당 기간을 시뮬레이션할 수 있는 데이터 구조가 부족합니다.
+                </li>
+              )}
+            </ul>
           </div>
         </div>
       </div>
@@ -607,111 +638,6 @@ export function Simulator({ btcPriceUsd, currentIndicators }: SimulatorProps) {
           </div>
         )
       }
-
-      {/* 4. Similarity Analysis */}
-      <div className="glass-panel p-4 md:p-5 rounded-2xl relative overflow-hidden">
-        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-          <Info className="w-4 h-4 text-cyan-400" />
-          현재 시장 위치 메타데이터
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 relative z-10">
-          <div className="space-y-3">
-            <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-slate-400 text-sm font-medium">MVRV Z-Score Tracker</span>
-                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">{indicators.z.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
-                <div
-                  className={`h-full rounded-full transition-all duration-1000 ${indicators.z >= 3.0
-                    ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
-                    : indicators.z < 1.0
-                      ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
-                      : 'bg-gradient-to-r from-yellow-500 to-orange-400'
-                    }`}
-                  style={{
-                    // Map -0.5 to 0%, 7.0 to 100%
-                    width: `${Math.min(Math.max(((indicators.z - (-0.5)) / 7.5) * 100, 0), 100)}%`
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono px-1">
-                <span>-0.5 (바닥)</span>
-                <span>1.0 (안전)</span>
-                <span>3.0 (경계)</span>
-                <span>7.0 (광기)</span>
-              </div>
-            </div>
-
-            <div className="p-4 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-slate-400 text-sm font-medium">200주 MA 이격률</span>
-                <span className="text-white font-mono bg-slate-800 px-2 py-0.5 rounded text-xs">
-                  {indicators.ma >= 1 ? `+${((indicators.ma - 1) * 100).toFixed(0)}% (이평선 위)` : `${((indicators.ma - 1) * 100).toFixed(0)}% (이평선 아래)`}
-                </span>
-              </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner flex relative">
-                {/* Safe zone marker (0.5 to 1.5) -> 0% to 22.2% of the bar assuming 5.0 max */}
-                {/* Neutral zone marker (1.5 to 2.5) -> 22.2% to 44.4% */}
-                {/* Danger zone marker (2.5+) -> 44.4%+ */}
-                <div
-                  className={`h-full rounded-full transition-all duration-1000 ${indicators.ma >= 2.5
-                    ? 'bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
-                    : indicators.ma < 1.5
-                      ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]'
-                      : 'bg-gradient-to-r from-yellow-500 to-orange-400'
-                    }`}
-                  style={{
-                    // Map 0.5x to 0%, 5.0x to 100%
-                    width: `${Math.min(Math.max(((indicators.ma - 0.5) / 4.5) * 100, 0), 100)}%`
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono px-1">
-                <span>0.5x (바닥)</span>
-                <span>1.5x (안전)</span>
-                <span>2.5x (경계)</span>
-                <span>5.0x (광기)</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner flex flex-col justify-center items-center">
-                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">단기 추세(60d)</span>
-                <span className={`text-sm font-bold ${indicators.s > 0 ? 'text-green-400' : 'text-red-400'} flex items-center gap-1`}>
-                  {indicators.s > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                  {indicators.s > 0 ? 'Uptrend' : 'Downtrend'}
-                </span>
-              </div>
-              <div className="p-3 bg-slate-900/60 rounded-xl border border-white/5 shadow-inner flex flex-col justify-center items-center">
-                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">반감기 사이클</span>
-                <span className="text-cyan-400 text-sm font-bold font-mono">
-                  D+{getDaysSinceHalving(indicators.date || new Date().toISOString())}일
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
-              유사 과거 패턴 레퍼런스
-            </p>
-            <ul className="space-y-2">
-              {similarPeriods.length > 0 ? similarPeriods.map((item, idx) => (
-                <li key={idx} className="flex items-center justify-between text-sm bg-white/5 hover:bg-white/10 transition-colors py-2 px-3 rounded-lg border border-white/5 group">
-                  <span className="text-cyan-400 font-mono font-medium group-hover:text-cyan-300 transition-colors">{item.point.d}</span>
-                  <span className="text-slate-300 text-xs font-bold bg-slate-800 px-2 py-1 rounded-md opacity-80 group-hover:opacity-100">일치율 {Math.round(item.similarity)}%</span>
-                </li>
-              )) : (
-                <li className="text-sm text-slate-500 italic py-2 px-3 text-center bg-white/5 rounded-lg border-dashed border border-white/10">
-                  해당 기간을 시뮬레이션할 수 있는 데이터 구조가 부족합니다.
-                </li>
-              )}
-            </ul>
-          </div>
-        </div>
-      </div>
 
       {/* Disclaimer */}
       <div className="border border-white/5 p-4 rounded-xl flex gap-3 items-start max-w-4xl mx-auto opacity-70 hover:opacity-100 transition-opacity">
