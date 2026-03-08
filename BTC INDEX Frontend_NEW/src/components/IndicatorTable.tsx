@@ -55,6 +55,67 @@ const INDICATOR_DETAILS: Record<string, { meaning: string; interpretation: strin
   }
 };
 
+const renderProgressBar = (name: string, valueStr: string | number) => {
+  const value = typeof valueStr === 'string' ? parseFloat(valueStr.replace(/[^0-9.-]/g, '')) : valueStr;
+  if (isNaN(value)) return null;
+
+  let min = 0, max = 100, safe = 0, danger = 100;
+
+  switch (name) {
+    case 'MVRV Z-Score':
+      min = -0.5; max = 7.0; safe = 1.0; danger = 3.0;
+      break;
+    case 'Puell Multiple':
+      min = 0.3; max = 4.0; safe = 1.0; danger = 2.5;
+      break;
+    case 'NUPL':
+      min = -0.2; max = 0.8; safe = 0.25; danger = 0.6;
+      break;
+    case '200 Week MA':
+      min = 0.5; max = 5.0; safe = 1.5; danger = 2.5;
+      break;
+    case 'Reserve Risk':
+      min = 0.000; max = 0.025; safe = 0.003; danger = 0.015;
+      break;
+    case 'SOPR':
+      min = 0.95; max = 1.05; safe = 1.00; danger = 1.02;
+      break;
+    case 'Funding Rate':
+      min = -0.02; max = 0.06; safe = 0.01; danger = 0.04;
+      break;
+    case 'Fear & Greed':
+      min = 0; max = 100; safe = 40; danger = 75;
+      break;
+    default:
+      return null;
+  }
+
+  let percent = ((value - min) / (max - min)) * 100;
+  percent = Math.min(Math.max(percent, 0), 100);
+
+  let colorClass = 'from-emerald-500 to-green-400 shadow-[0_0_8px_rgba(74,222,128,0.4)]';
+  if (value >= danger) {
+    colorClass = 'from-orange-500 to-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]';
+  } else if (value >= safe) {
+    colorClass = 'from-yellow-500 to-orange-400';
+  }
+
+  return (
+    <div className="w-full mt-1.5 hidden sm:block opacity-80 group-hover:opacity-100 transition-opacity">
+      <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden flex shadow-inner">
+        <div
+          className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r ${colorClass}`}
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+      <div className="flex justify-between text-[8px] text-slate-500 mt-0.5 font-mono px-0.5">
+        <span>{min}</span>
+        <span>{max}</span>
+      </div>
+    </div>
+  );
+};
+
 export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -107,7 +168,14 @@ export const IndicatorTable: React.FC<IndicatorTableProps> = ({ indicators }) =>
                   </div>
                 </td>
                 <td className="p-2 sm:p-4 text-slate-400 hidden sm:table-cell text-right font-mono text-sm">{ind.weight}%</td>
-                <td className="p-2 sm:p-4 font-mono text-cyan-400 text-xs sm:text-base whitespace-nowrap text-right font-semibold">{ind.currentValue}</td>
+                <td className="p-2 sm:p-4 whitespace-nowrap text-right">
+                  <div className="flex flex-col items-end w-full">
+                    <span className="font-mono text-cyan-400 text-xs sm:text-base font-semibold">{ind.currentValue}</span>
+                    <div className="w-24 sm:w-32">
+                      {renderProgressBar(ind.name, ind.currentValue)}
+                    </div>
+                  </div>
+                </td>
                 <td className="p-2 sm:p-4 text-center hidden sm:table-cell">
                   <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold border ${ind.score >= 7 ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)]' :
                     ind.score <= 3 ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]' :

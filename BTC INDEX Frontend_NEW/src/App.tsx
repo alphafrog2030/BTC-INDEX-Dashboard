@@ -261,12 +261,12 @@ export default function App() {
           <ScoreGauge score={currentReport.totalScore} />
 
           {/* Scoring Guide (Replaced Key Weights) */}
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
-            <div className="flex items-center gap-2 text-cyan-400 mb-4">
+          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div className="flex items-center gap-2 text-cyan-400 mb-3">
               <Info className="w-5 h-5" />
               <span className="font-bold">Scoring Guide (매매 기준)</span>
             </div>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">90점 이상</span>
                 <span className="text-green-400 font-bold bg-green-900/30 px-2 py-0.5 rounded">강력 매수</span>
@@ -297,9 +297,8 @@ export default function App() {
             <div className="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
               <h2 className="font-bold text-white flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-cyan-400" />
-                Live Indicator Analysis
+                지표 현황 및 분석
               </h2>
-              {lastUpdated && <span className="text-xs text-green-400">Live</span>}
             </div>
             <IndicatorTable indicators={currentReport.indicators} />
           </div>
