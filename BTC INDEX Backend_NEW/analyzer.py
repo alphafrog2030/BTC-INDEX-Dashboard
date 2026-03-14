@@ -5,12 +5,12 @@ from typing import Dict, List, Any, Optional
 
 class OnchainAnalyzer:
     """
-    비트코인 온체인 지표의 역사적 데이터를 분석하여 
+    비트코인 온체인 지표의 역사적 데이터를 분석하여
     '블렌디드 적응형(Blended Adaptive)' 점수를 산출합니다.
     """
-    
-    WINDOW_DAYS = 1460  # 4년 (반감기 주기)
-    
+
+    WINDOW_DAYS = 1400  # 200주 × 7일
+
     # 지표별 가중치 (프론트엔드 marketService.ts와 동일하게 설정)
     WEIGHTS = {
         "mvrv_z_score": 0.25,
@@ -21,18 +21,33 @@ class OnchainAnalyzer:
         "wma_ratio": 0.10
     }
 
+    # 역사적 데이터 없을 때 사용할 정적 임계값 (실전 BTC 시장 기준)
+    # buy: 이 값 이하면 10점(강력매수), sell: 이 값 이상이면 0점(강력매도)
+    STATIC_THRESHOLDS = {
+        "reserve_risk":   {"buy": 0.002,    "sell": 0.020,   "med": 0.006},
+        "sth_sopr":       {"buy": 0.975,    "sell": 1.040,   "med": 1.000},
+        "puell_multiple": {"buy": 0.600,    "sell": 2.500,   "med": 1.000},
+        "funding_rate":   {"buy": -0.00005, "sell": 0.00030, "med": 0.00005},
+    }
+
     def __init__(self, historical_data: List[Dict[str, Any]]):
         self.df = pd.DataFrame(historical_data)
         self.df['d'] = pd.to_datetime(self.df['d'])
         self.df = self.df.set_index('d').sort_index()
-        
-        # 200WMA Ratio 미리 계산
-        if 'price' in self.df.columns and 'wma_200' in self.df.columns:
+
+        # 시뮬레이터용 단축 컬럼명(p,z,ma,s) → 분석기 장문 컬럼명으로 정규화
+        rename_map = {'p': 'price', 'z': 'mvrv_z', 'ma': 'wma_ratio', 's': 'mvrv_slope'}
+        self.df = self.df.rename(columns={
+            k: v for k, v in rename_map.items()
+            if k in self.df.columns and v not in self.df.columns
+        })
+
+        # 200WMA Ratio 미리 계산 (price/wma_200 형식 원본 데이터 대응)
+        if 'price' in self.df.columns and 'wma_200' in self.df.columns and 'wma_ratio' not in self.df.columns:
             self.df['wma_ratio'] = self.df['price'].astype(float) / self.df['wma_200'].astype(float)
-            
+
         # MVRV Z-Score 60일 기울기 계산 (시뮬레이터용)
-        if 'mvrv_z' in self.df.columns:
-            # 60일 전과의 수치 차이를 기울기로 정의 (전처리용)
+        if 'mvrv_z' in self.df.columns and 'mvrv_slope' not in self.df.columns:
             self.df['mvrv_slope'] = self.df['mvrv_z'].diff(60)
 
     def export_historical_data(self) -> List[Dict[str, Any]]:
@@ -65,11 +80,29 @@ class OnchainAnalyzer:
         # JSON 직렬화 가능한 리스트로 변환 (NaN은 None으로 변환됨)
         return export_df[final_cols].replace({np.nan: None}).to_dict(orient='records')
 
+    def _score_from_thresholds(self, val: float, buy: float, sell: float, med: float) -> int:
+        """정적 임계값으로 점수 산출 (역사적 데이터 없을 때 폴백)."""
+        if val <= buy:
+            return 10
+        elif val >= sell:
+            return 0
+        elif val < med:
+            ratio = (med - val) / (med - buy)
+            return int(5 + ratio * 5)
+        else:
+            ratio = (val - med) / (sell - med)
+            return int(5 - ratio * 5)
+
     def get_blended_percentile_score(self, indicator_key: str, current_val: float) -> int:
         """
         특정 지표의 현재 수치가 8년(두 사이클) 블렌딩 기준 몇 점인지 산출합니다.
+        역사적 데이터가 없으면 정적 임계값으로 폴백합니다.
         """
         if indicator_key not in self.df.columns:
+            # 정적 임계값 폴백 (API 한도 초과 등으로 역사 데이터 미보유 지표 대응)
+            if indicator_key in self.STATIC_THRESHOLDS:
+                t = self.STATIC_THRESHOLDS[indicator_key]
+                return self._score_from_thresholds(current_val, t['buy'], t['sell'], t['med'])
             return 5
             
         latest_date = self.df.index.max()
@@ -138,11 +171,11 @@ class OnchainAnalyzer:
         
         indicator_scores = {}
         total_weighted_score = 0.0
-        
+
         for key, val in mapping.items():
+            weight = self.WEIGHTS.get(key, 0)
             if val is not None:
                 score = self.get_blended_percentile_score(key, val)
-                weight = self.WEIGHTS.get(key, 0)
                 indicator_scores[key] = {
                     "value": val,
                     "score": score,
@@ -151,9 +184,11 @@ class OnchainAnalyzer:
                 }
                 total_weighted_score += score * weight
             else:
-                indicator_scores[key] = {"value": None, "score": 5, "weight": self.WEIGHTS.get(key, 0), "signal": "NEUTRAL"}
-        
-        total_score = round(total_weighted_score * 10, 1) # 0-100 scale
+                # null 지표도 중립(5점)으로 가중 평균에 포함 → 점수 왜곡 방지
+                indicator_scores[key] = {"value": None, "score": 5, "weight": weight, "signal": "NEUTRAL"}
+                total_weighted_score += 5 * weight
+
+        total_score = round(total_weighted_score * 10, 1)  # 0-100 스케일 (가중치 합=1.0 → ×10)
         
         return {
             "total_score": total_score,

@@ -88,15 +88,23 @@ export default function App() {
     const currentReport = report || MOCK_DATA;
 
     if (view === ViewMode.SIMULATION) {
+      // 시뮬레이터용 현재 지표값 파싱
+      const lastHistPoint = historicalData.length > 0 ? historicalData[historicalData.length - 1] : null;
+      const rawMA = currentReport.indicators.find(i => i.name === '200 Week MA')?.currentValue ?? '';
+      const maNumeric = Number(rawMA.replace(/[+%]/g, ''));
+      const maRatio = !isNaN(maNumeric) && maNumeric !== 0 ? maNumeric / 100 + 1 : (lastHistPoint?.ma ?? 1.0);
+      const zRaw = currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue ?? '';
+      const zScore = Number(zRaw.replace(/,/g, '')) || lastHistPoint?.z || 1.8;
+
       return (
         <div className="max-w-4xl mx-auto animate-fadeIn">
           <Simulator
             btcPriceUsd={currentReport.btcPrice || 60000}
             historicalData={historicalData}
             currentIndicators={{
-              z: Number(currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue.replace(/,/g, '')) || 1.8,
-              ma: Number(currentReport.indicators.find(i => i.name === '200 Week MA')?.currentValue.replace(/[+%]/g, '')) / 100 + 1 || 1.0,
-              s: 0.1 // Default fallback for slope
+              z: zScore,
+              ma: maRatio,
+              s: lastHistPoint?.s ?? 0.1  // 마지막 역사적 데이터의 60일 기울기
             }}
           />
         </div>

@@ -112,11 +112,11 @@ def collect_today() -> Dict[str, Any]:
 def compute_wma200(historical: List[Dict[str, Any]]) -> Optional[float]:
     """
     historical_onchain.json 의 마지막 WMA_200_DAYS 개 price 값으로
-    200 Week MA를 계산합니다.
+    200 Week MA를 계산합니다. 'price' 또는 단축 'p' 컬럼 모두 지원합니다.
     """
     prices: List[float] = []
     for row in historical:
-        p = row.get("price")
+        p = row.get("price") or row.get("p")  # 장문/단축 컬럼명 모두 대응
         if p is not None:
             try:
                 prices.append(float(p))
@@ -132,6 +132,41 @@ def compute_wma200(historical: List[Dict[str, Any]]) -> Optional[float]:
 
 
 from analyzer import OnchainAnalyzer
+
+
+def load_last_known_values() -> Dict[str, Any]:
+    """
+    data.json에서 마지막으로 저장된 지표 raw 값을 읽어 반환합니다.
+    API 한도 초과로 null 수집 시 폴백 용도로 사용합니다.
+    """
+    if not os.path.exists(DATA_JSON_FILE):
+        return {}
+    try:
+        with open(DATA_JSON_FILE, "r", encoding="utf-8") as f:
+            prev = json.load(f)
+        onchain = prev.get("onchain", {})
+        result: Dict[str, Any] = {}
+        key_map = {
+            "mvrv_z_score":   "mvrv_z",
+            "reserve_risk":   "reserve_risk",
+            "sth_sopr":       "sth_sopr",
+            "puell_multiple": "puell",
+            "funding_rate":   "funding_rate",
+            "realized_cap":   "realized_cap",
+        }
+        for json_key, row_key in key_map.items():
+            entry = onchain.get(json_key)
+            if isinstance(entry, dict):
+                val = entry.get("value")
+                if val is not None:
+                    result[row_key] = val
+            elif json_key == "realized_cap" and entry is not None:
+                result[row_key] = entry
+        return result
+    except Exception as e:
+        print(f"  ⚠️ 이전 data.json 폴백 로드 실패: {e}")
+        return {}
+
 
 # ─── 파일 저장 ────────────────────────────────────────────────────────────────
 
@@ -269,6 +304,18 @@ def main() -> None:
 
     # ── Step 2: 오늘 데이터 수집 ───────────────────────────────────────
     today_row = collect_today()
+
+    # ── Step 2-b: null 지표 → 이전 data.json 값으로 폴백 ──────────────
+    null_keys = [k for k, v in today_row.items() if v is None and k != 'd']
+    if null_keys:
+        print(f"\n  ♻️  null 지표 발견: {null_keys} → 이전 data.json 폴백 시도")
+        fallback = load_last_known_values()
+        for key in null_keys:
+            if key in fallback:
+                today_row[key] = fallback[key]
+                print(f"    [{key}] 폴백 적용: {fallback[key]}")
+            else:
+                print(f"    [{key}] 폴백 없음 — null 유지")
 
     # ── Step 3: 200WMA 계산 ────────────────────────────────────────────
     # 오늘 price를 임시로 historical 끝에 붙여서 계산 (저장 전)

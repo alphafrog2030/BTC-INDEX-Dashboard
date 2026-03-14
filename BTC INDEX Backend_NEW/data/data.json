@@ -1,15 +1,15 @@
 {
-    "timestamp": "2026-03-14T13:00:55.472863",
-    "total_score": 41.5,
-    "overall_signal": "NEUTRAL",
+    "timestamp": "2026-03-14T13:42:07.267667",
+    "total_score": 72.0,
+    "overall_signal": "BUY",
     "market": {
         "current_price_usd": 70759.49,
         "wma_200_usd": 58860.78,
         "wma_ratio": 1.2021500564552492
     },
     "sentiment": {
-        "value": 50,
-        "classification": "Neutral"
+        "value": 16,
+        "classification": "Extreme Fear"
     },
     "onchain": {
         "mvrv_z_score": {
@@ -25,29 +25,29 @@
             "signal": "BUY"
         },
         "sth_sopr": {
-            "value": null,
+            "value": 0.9979767814232752,
             "score": 5,
             "weight": 0.15,
             "signal": "NEUTRAL"
         },
         "puell_multiple": {
-            "value": null,
-            "score": 5,
+            "value": 0.635,
+            "score": 9,
             "weight": 0.15,
-            "signal": "NEUTRAL"
+            "signal": "BUY"
         },
         "funding_rate": {
-            "value": null,
-            "score": 5,
+            "value": -3.79e-06,
+            "score": 7,
             "weight": 0.15,
             "signal": "NEUTRAL"
         },
         "wma_ratio": {
             "value": 1.2021500564552492,
-            "score": 9,
+            "score": 8,
             "weight": 0.1,
             "signal": "BUY"
         },
-        "realized_cap": null
+        "realized_cap": 1084758182398.44
     }
 }
