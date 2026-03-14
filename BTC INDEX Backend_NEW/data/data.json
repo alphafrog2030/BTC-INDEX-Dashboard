@@ -1,0 +1,16 @@
+{
+    "timestamp": "2026-03-14T10:58:10.724119",
+    "market": {
+        "current_price_usd": 70759.49,
+        "wma_200_usd": 58815.51,
+        "wma_ratio": 1.2031
+    },
+    "onchain": {
+        "mvrv_z_score": 0.5522,
+        "reserve_risk": 0.0006087739,
+        "sth_sopr": 0.9979767814232752,
+        "puell_multiple": 0.635,
+        "funding_rate": -3.79e-06,
+        "realized_cap": 1084758182398.44
+    }
+}
