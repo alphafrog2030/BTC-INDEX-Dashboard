@@ -1,0 +1,4 @@
+# BTC INDEX Backend_NEW requirements
+# Python 표준 라이브러리(urllib, json, os)만 사용하므로 추가 패키지 없음.
+# 향후 requests 전환 시 아래를 활성화:
+# requests>=2.31.0
