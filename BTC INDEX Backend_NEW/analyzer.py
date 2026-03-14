@@ -21,13 +21,22 @@ class OnchainAnalyzer:
         "wma_ratio": 0.10
     }
 
-    # 역사적 데이터 없을 때 사용할 정적 임계값 (실전 BTC 시장 기준)
+    # 역사적 데이터 없을 때 사용할 정적 임계값 (BTC 사이클 실증 기준)
     # buy: 이 값 이하면 10점(강력매수), sell: 이 값 이상이면 0점(강력매도)
+    # ─ reserve_risk : 바닥권 실측값 0.0003~0.001 기준 강화, 2021 고점 0.03 반영
+    # ─ sth_sopr     : 항복 기준 0.970으로 강화, 과열 기준 1.050으로 완화
+    # ─ puell_multiple: 채굴자 항복 실증치 ≤0.5, 사이클 고점 3.5~5.0 반영
+    # ─ funding_rate  : 유의미한 매수 신호는 -0.0002 이하, 과열은 0.0005 이상
     STATIC_THRESHOLDS = {
-        "reserve_risk":   {"buy": 0.002,    "sell": 0.020,   "med": 0.006},
-        "sth_sopr":       {"buy": 0.975,    "sell": 1.040,   "med": 1.000},
-        "puell_multiple": {"buy": 0.600,    "sell": 2.500,   "med": 1.000},
-        "funding_rate":   {"buy": -0.00005, "sell": 0.00030, "med": 0.00005},
+        "reserve_risk":   {"buy": 0.0010,   "sell": 0.025,   "med": 0.006},
+        "sth_sopr":       {"buy": 0.970,    "sell": 1.050,   "med": 1.000},
+        "puell_multiple": {"buy": 0.500,    "sell": 3.500,   "med": 1.000},
+        "funding_rate":   {"buy": -0.0002,  "sell": 0.0005,  "med": 0.0001},
+    }
+
+    # analyze() 내 지표 키 → df 컬럼명 매핑 (이름 불일치 해소)
+    _KEY_TO_COL = {
+        "mvrv_z_score": "mvrv_z",
     }
 
     def __init__(self, historical_data: List[Dict[str, Any]]):
@@ -98,45 +107,48 @@ class OnchainAnalyzer:
         특정 지표의 현재 수치가 8년(두 사이클) 블렌딩 기준 몇 점인지 산출합니다.
         역사적 데이터가 없으면 정적 임계값으로 폴백합니다.
         """
-        if indicator_key not in self.df.columns:
+        # 키 → 실제 df 컬럼명 변환 (mvrv_z_score → mvrv_z 등)
+        col_name = self._KEY_TO_COL.get(indicator_key, indicator_key)
+
+        if col_name not in self.df.columns:
             # 정적 임계값 폴백 (API 한도 초과 등으로 역사 데이터 미보유 지표 대응)
             if indicator_key in self.STATIC_THRESHOLDS:
                 t = self.STATIC_THRESHOLDS[indicator_key]
                 return self._score_from_thresholds(current_val, t['buy'], t['sell'], t['med'])
             return 5
-            
+
         latest_date = self.df.index.max()
         four_years_ago = latest_date - pd.Timedelta(days=self.WINDOW_DAYS)
         eight_years_ago = latest_date - pd.Timedelta(days=self.WINDOW_DAYS * 2)
-        
+
         # 주기별 데이터 분할
-        recent_vals = self.df.loc[four_years_ago:latest_date, indicator_key].dropna().astype(float)
-        prior_vals = self.df.loc[eight_years_ago:four_years_ago, indicator_key].dropna().astype(float)
-        
+        recent_vals = self.df.loc[four_years_ago:latest_date, col_name].dropna().astype(float)
+        prior_vals = self.df.loc[eight_years_ago:four_years_ago, col_name].dropna().astype(float)
+
         if recent_vals.empty or prior_vals.empty:
             return 5
 
-        # 지표별 임계값 백분위 (P10: 매수, P90: 매도)
-        # Funding Rate와 SOPR은 변동성이 크므로 좁은 구간 사용
+        # 지표별 임계값 백분위 (P10: 매수, P80: 매도)
+        # P80 사용: 최근 사이클 MVRV 고점 압축 현상 반영 (2025 고점 3.35 대응)
         p_buy = 10
-        p_sell = 90
-        
-        r_p10, r_p90 = np.percentile(recent_vals, p_buy), np.percentile(recent_vals, p_sell)
-        p_p10, p_p90 = np.percentile(prior_vals, p_buy), np.percentile(prior_vals, p_sell)
-        
+        p_sell = 80
+
+        r_p10, r_p80 = np.percentile(recent_vals, p_buy), np.percentile(recent_vals, p_sell)
+        p_p10, p_p80 = np.percentile(prior_vals, p_buy), np.percentile(prior_vals, p_sell)
+
         # 블렌딩 (1:1)
         blended_buy = (r_p10 + p_p10) / 2
-        blended_sell = (r_p90 + p_p90) / 2
+        blended_sell = (r_p80 + p_p80) / 2
         blended_med = (recent_vals.median() + prior_vals.median()) / 2
-        
+
         # 점수 산출 (선형 보간 근사)
         # 10점(강력매수) <--- blended_buy --- blended_med --- blended_sell ---> 0점(강력매도)
-        
+
         # Funding Rate 및 SOPR은 특수 처리 (1.0 혹은 0 근처가 중립)
         if indicator_key == "sth_sopr":
             blended_med = 1.0
         elif indicator_key == "funding_rate":
-            blended_med = 0.01
+            blended_med = 0.0001
 
         if current_val <= blended_buy:
             return 10

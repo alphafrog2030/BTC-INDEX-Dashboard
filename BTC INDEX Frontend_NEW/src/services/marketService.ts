@@ -1,6 +1,31 @@
 import { ReportData, Indicator } from '../types';
-// [변경] 깃허브 Raw Data 주소 (운영 환경 배포용)
-const API_URL = "https://raw.githubusercontent.com/alphafrog2030/BTC-INDEX-Dashboard/main/BTC%20INDEX%20Backend/data.json";
+// 백엔드 NEW 경로 (BTC INDEX Backend_NEW/data/data.json)
+const API_URL = "https://raw.githubusercontent.com/alphafrog2030/BTC-INDEX-Dashboard/main/BTC%20INDEX%20Backend_NEW/data/data.json";
+
+// 백엔드 지표 키 → 프론트엔드 표시명 + 가중치 매핑 (analyzer.py WEIGHTS와 동일)
+const INDICATOR_DEFS = [
+  { key: 'mvrv_z_score',   name: 'MVRV Z-Score',   weight: 25 },
+  { key: 'reserve_risk',   name: 'Reserve Risk',    weight: 20 },
+  { key: 'sth_sopr',       name: 'STH-SOPR',        weight: 15 },
+  { key: 'puell_multiple', name: 'Puell Multiple',  weight: 15 },
+  { key: 'funding_rate',   name: 'Funding Rate',    weight: 15 },
+  { key: 'wma_ratio',      name: '200 Week MA',     weight: 10 },
+] as const;
+
+function formatIndicatorValue(key: string, value: number): string {
+  switch (key) {
+    case 'mvrv_z_score':   return value.toFixed(4);
+    case 'reserve_risk':   return parseFloat(value.toPrecision(4)).toString();
+    case 'sth_sopr':       return value.toFixed(4);
+    case 'puell_multiple': return value.toFixed(3);
+    case 'funding_rate':   return `${(value * 100).toFixed(5)}%`;
+    case 'wma_ratio': {
+      const diff = (value - 1) * 100;
+      return diff >= 0 ? `+${diff.toFixed(2)}%` : `${diff.toFixed(2)}%`;
+    }
+    default: return value.toLocaleString(undefined, { maximumFractionDigits: 4 });
+  }
+}
 
 export const fetchMarketData = async (): Promise<ReportData> => {
   try {
@@ -12,60 +37,35 @@ export const fetchMarketData = async (): Promise<ReportData> => {
     const data = await response.json();
 
     const price = data.market.current_price_usd;
-    const wma200 = data.market.wma_200_usd;
-    const sentiment = data.sentiment.value;
     const onchain = data.onchain;
 
-    // Map backend data to indicators
-    const rawIndicators = [
-      { name: 'MVRV Z-Score', val: onchain.mvrv_z_score, weight: 27.5 },
-      { name: 'Puell Multiple', val: onchain.puell_multiple, weight: 17.5 },
-      { name: 'NUPL', val: onchain.nupl, weight: 17.5 },
-      { name: '200 Week MA', val: wma200, weight: 17.5 },
-      { name: 'Fear & Greed', val: sentiment, weight: 12.5 },
-      { name: 'Funding Rate', val: onchain.funding_rate, weight: 7.5 },
-    ];
-
-    let totalWeightedScore = 0;
-
-    // Calculate scores
-    const indicators: Indicator[] = rawIndicators.map(ind => {
-      const value = ind.val !== null && ind.val !== undefined ? ind.val : 0;
-      const isMissing = ind.val === null || ind.val === undefined;
-
-      const { score, signal } = calculateScore(ind.name, value, price);
-
-      const finalScore = isMissing ? 5 : score;
-      const weightedScore = (finalScore * ind.weight) / 100;
-
-      totalWeightedScore += weightedScore;
-
-      let displayVal = isMissing ? "Loading..." : value.toLocaleString(undefined, { maximumFractionDigits: 2 });
-      if (!isMissing && ind.name === '200 Week MA') {
-        const ratio = price / value;
-        const diff = (ratio - 1) * 100;
-        displayVal = diff >= 0 ? `+${diff.toFixed(2)}%` : `${diff.toFixed(2)}%`;
-      }
-      if (!isMissing && ind.name === 'Funding Rate') displayVal = `${value.toFixed(4)}%`;
-      if (!isMissing && ind.name === 'Fear & Greed') displayVal = `${value}/100`;
+    // 백엔드가 산출한 score/signal을 직접 사용 (프론트엔드 자체 점수 계산 제거)
+    const indicators: Indicator[] = INDICATOR_DEFS.map(def => {
+      const ind = onchain[def.key];
+      const score: number = ind?.score ?? 5;
+      const signal: 'BUY' | 'NEUTRAL' | 'SELL' = ind?.signal ?? 'NEUTRAL';
+      const val: number | null = ind?.value ?? null;
+      const weightedScore = (score * def.weight) / 100;
+      const displayVal = val === null ? 'Loading...' : formatIndicatorValue(def.key, val);
 
       return {
-        name: ind.name,
-        weight: ind.weight,
+        name: def.name,
+        weight: def.weight,
         currentValue: displayVal,
-        score: finalScore,
+        score,
         weightedScore,
-        signal: isMissing ? 'NEUTRAL' : signal
+        signal,
       };
     });
 
-    const finalScore = Math.min(Math.round(totalWeightedScore * 10), 100);
-    const texts = generateKoreanAnalysis(price, finalScore, indicators);
+    // 백엔드 total_score 직접 사용 (0~100 스케일)
+    const totalScore = data.total_score;
+    const texts = generateKoreanAnalysis(price, totalScore, indicators);
 
     return {
       btcPrice: price,
       timestamp: new Date(data.timestamp).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
-      totalScore: finalScore,
+      totalScore,
       interpretation: texts.interpretation,
       strategyText: texts.strategyText,
       risksAndAdvice: texts.risksAndAdvice,
@@ -79,72 +79,6 @@ export const fetchMarketData = async (): Promise<ReportData> => {
     throw error;
   }
 };
-
-function calculateScore(name: string, value: number, price: number): { score: number, signal: 'BUY' | 'NEUTRAL' | 'SELL' } {
-  let score = 5;
-  let signal: 'BUY' | 'NEUTRAL' | 'SELL' = 'NEUTRAL';
-
-  if (name === 'MVRV Z-Score') {
-    if (value <= 0.0) { score = 10; signal = 'BUY'; }
-    else if (value <= 1.0) { score = 8; signal = 'BUY'; }
-    else if (value >= 7.0) { score = 0; signal = 'SELL'; }
-    else if (value >= 3.0) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === 'Puell Multiple') {
-    if (value <= 0.5) { score = 10; signal = 'BUY'; }
-    else if (value <= 1.0) { score = 8; signal = 'BUY'; }
-    else if (value >= 4.0) { score = 0; signal = 'SELL'; }
-    else if (value >= 2.5) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === 'NUPL') {
-    if (value < 0) { score = 10; signal = 'BUY'; }
-    else if (value <= 0.25) { score = 8; signal = 'BUY'; }
-    else if (value >= 0.75) { score = 0; signal = 'SELL'; }
-    else if (value >= 0.60) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === '200 Week MA') {
-    if (value === 0) return { score: 5, signal: 'NEUTRAL' }; // Avoid div by zero
-    const ratio = price / value;
-    if (ratio <= 1.0) { score = 10; signal = 'BUY'; }
-    else if (ratio <= 1.5) { score = 8; signal = 'BUY'; }
-    else if (ratio >= 5.0) { score = 0; signal = 'SELL'; }
-    else if (ratio >= 2.5) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === 'Fear & Greed') {
-    if (value <= 20) { score = 10; signal = 'BUY'; }
-    else if (value <= 40) { score = 8; signal = 'BUY'; }
-    else if (value >= 80) { score = 0; signal = 'SELL'; }
-    else if (value >= 75) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === 'Funding Rate') {
-    if (value <= -0.01) { score = 10; signal = 'BUY'; }
-    else if (value <= 0.01) { score = 8; signal = 'BUY'; }
-    else if (value >= 0.10) { score = 0; signal = 'SELL'; }
-    else if (value >= 0.05) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === 'Reserve Risk') {
-    if (value <= 0.002) { score = 10; signal = 'BUY'; }
-    else if (value <= 0.003) { score = 8; signal = 'BUY'; }
-    else if (value >= 0.02) { score = 0; signal = 'SELL'; }
-    else if (value >= 0.015) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-  else if (name === 'SOPR') {
-    if (value <= 0.98) { score = 10; signal = 'BUY'; }
-    else if (value <= 1.00) { score = 8; signal = 'BUY'; }
-    else if (value >= 1.05) { score = 0; signal = 'SELL'; }
-    else if (value >= 1.02) { score = 2; signal = 'SELL'; }
-    else score = 5;
-  }
-
-  return { score, signal };
-}
 
 export const generateKoreanAnalysis = (
   btcPrice: number,

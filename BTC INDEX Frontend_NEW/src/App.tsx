@@ -23,11 +23,12 @@ const MOCK_DATA: ReportData = {
   totalScore: 0,
   interpretation: "분석 대기중...",
   indicators: [
-    { name: 'MVRV Z-Score', weight: 27.5, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
-    { name: 'Puell Multiple', weight: 17.5, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
-    { name: 'NUPL', weight: 17.5, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
-    { name: '200 Week MA', weight: 17.5, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
-    { name: 'Funding Rate', weight: 7.5, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
+    { name: 'MVRV Z-Score',  weight: 25, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
+    { name: 'Reserve Risk',  weight: 20, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
+    { name: 'STH-SOPR',      weight: 15, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
+    { name: 'Puell Multiple',weight: 15, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
+    { name: 'Funding Rate',  weight: 15, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
+    { name: '200 Week MA',   weight: 10, currentValue: '-', score: 0, weightedScore: 0, signal: 'NEUTRAL' },
   ],
   strategyText: "데이터 업데이트가 필요합니다.",
   risksAndAdvice: "",
@@ -306,20 +307,21 @@ export default function App() {
             <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
               <h4 className="text-slate-400 text-sm font-bold mb-2">매수 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
-                <li>MVRV Z-Score: <span className="text-green-400 font-mono">0.1 이하</span></li>
+                <li>MVRV Z-Score: <span className="text-green-400 font-mono">1.0 이하</span></li>
+                <li>Reserve Risk: <span className="text-green-400 font-mono">0.001 이하</span></li>
+                <li>STH-SOPR: <span className="text-green-400 font-mono">0.97 이하</span></li>
                 <li>Puell Multiple: <span className="text-green-400 font-mono">0.5 이하</span></li>
-                <li>NUPL: <span className="text-green-400 font-mono">0 미만</span></li>
-                <li>가격이 <span className="text-green-400 font-mono">200주 MA</span> 도달 시</li>
+                <li>가격이 <span className="text-green-400 font-mono">200주 MA</span> 근처 도달 시</li>
                 <li>Funding Rate: <span className="text-green-400 font-mono">음수 유지</span></li>
               </ul>
             </div>
             <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
               <h4 className="text-slate-400 text-sm font-bold mb-2">매도 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
-                <li>MVRV Z-Score: <span className="text-red-400 font-mono">7.0 초과</span></li>
-                <li>Puell Multiple: <span className="text-red-400 font-mono">4.0 초과</span></li>
-                <li>NUPL: <span className="text-red-400 font-mono">0.75 초과</span></li>
-                <li>Fear & Greed: <span className="text-red-400 font-mono">극단적 탐욕</span> (80 이상)</li>
+                <li>MVRV Z-Score: <span className="text-red-400 font-mono">3.5 초과</span></li>
+                <li>Reserve Risk: <span className="text-red-400 font-mono">0.025 초과</span></li>
+                <li>STH-SOPR: <span className="text-red-400 font-mono">1.05 초과</span></li>
+                <li>Puell Multiple: <span className="text-red-400 font-mono">3.5 초과</span></li>
                 <li>Funding Rate: <span className="text-red-400 font-mono">0.05% 이상 지속</span></li>
               </ul>
             </div>

@@ -1,6 +1,6 @@
 {
     "timestamp": "2026-03-14T13:42:07.267667",
-    "total_score": 72.0,
+    "total_score": 74.0,
     "overall_signal": "BUY",
     "market": {
         "current_price_usd": 70759.49,
@@ -14,7 +14,7 @@
     "onchain": {
         "mvrv_z_score": {
             "value": 0.5522,
-            "score": 5,
+            "score": 7,
             "weight": 0.25,
             "signal": "NEUTRAL"
         },
@@ -32,13 +32,13 @@
         },
         "puell_multiple": {
             "value": 0.635,
-            "score": 9,
+            "score": 8,
             "weight": 0.15,
             "signal": "BUY"
         },
         "funding_rate": {
             "value": -3.79e-06,
-            "score": 7,
+            "score": 6,
             "weight": 0.15,
             "signal": "NEUTRAL"
         },
