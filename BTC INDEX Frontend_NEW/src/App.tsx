@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchMarketData, fetchHistoricalData } from './services/marketService'; // Changed from geminiService
+import { fetchMarketData } from './services/marketService'; // Changed from geminiService
 import { ReportData, ViewMode } from './types';
 import { ScoreGauge } from './components/ScoreGauge';
 import { IndicatorTable } from './components/IndicatorTable';
@@ -36,7 +36,6 @@ const MOCK_DATA: ReportData = {
 
 export default function App() {
   const [report, setReport] = useState<ReportData | null>(null);
-  const [historicalData, setHistoricalData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>(ViewMode.DASHBOARD);
@@ -65,12 +64,8 @@ export default function App() {
     setError(null);
     try {
       // Use the new scraper service
-      const [data, hist] = await Promise.all([
-        fetchMarketData(),
-        fetchHistoricalData()
-      ]);
+      const data = await fetchMarketData();
       setReport(data);
-      setHistoricalData(hist);
       setLastUpdated(new Date());
     } catch (err: any) {
       console.error(err);
@@ -88,23 +83,14 @@ export default function App() {
     const currentReport = report || MOCK_DATA;
 
     if (view === ViewMode.SIMULATION) {
-      // 시뮬레이터용 현재 지표값 파싱
-      const lastHistPoint = historicalData.length > 0 ? historicalData[historicalData.length - 1] : null;
-      const rawMA = currentReport.indicators.find(i => i.name === '200 Week MA')?.currentValue ?? '';
-      const maNumeric = Number(rawMA.replace(/[+%]/g, ''));
-      const maRatio = !isNaN(maNumeric) && maNumeric !== 0 ? maNumeric / 100 + 1 : (lastHistPoint?.ma ?? 1.0);
-      const zRaw = currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue ?? '';
-      const zScore = Number(zRaw.replace(/,/g, '')) || lastHistPoint?.z || 1.8;
-
       return (
         <div className="max-w-4xl mx-auto animate-fadeIn">
           <Simulator
             btcPriceUsd={currentReport.btcPrice || 60000}
-            historicalData={historicalData}
             currentIndicators={{
-              z: zScore,
-              ma: maRatio,
-              s: lastHistPoint?.s ?? 0.1  // 마지막 역사적 데이터의 60일 기울기
+              z: currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue !== '-' ? Number(currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue) : 1.8,
+              ma: 1.2, // Default fallback
+              s: 0.1 // Default fallback
             }}
           />
         </div>
@@ -321,8 +307,8 @@ export default function App() {
               <h4 className="text-slate-400 text-sm font-bold mb-2">매수 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
                 <li>MVRV Z-Score: <span className="text-green-400 font-mono">0.1 이하</span></li>
-                <li>Reserve Risk: <span className="text-green-400 font-mono">0.002 이하</span></li>
                 <li>Puell Multiple: <span className="text-green-400 font-mono">0.5 이하</span></li>
+                <li>NUPL: <span className="text-green-400 font-mono">0 미만</span></li>
                 <li>가격이 <span className="text-green-400 font-mono">200주 MA</span> 도달 시</li>
                 <li>Funding Rate: <span className="text-green-400 font-mono">음수 유지</span></li>
               </ul>
@@ -331,8 +317,8 @@ export default function App() {
               <h4 className="text-slate-400 text-sm font-bold mb-2">매도 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
                 <li>MVRV Z-Score: <span className="text-red-400 font-mono">7.0 초과</span></li>
-                <li>Reserve Risk: <span className="text-red-400 font-mono">0.02 초과</span></li>
                 <li>Puell Multiple: <span className="text-red-400 font-mono">4.0 초과</span></li>
+                <li>NUPL: <span className="text-red-400 font-mono">0.75 초과</span></li>
                 <li>Fear & Greed: <span className="text-red-400 font-mono">극단적 탐욕</span> (80 이상)</li>
                 <li>Funding Rate: <span className="text-red-400 font-mono">0.05% 이상 지속</span></li>
               </ul>

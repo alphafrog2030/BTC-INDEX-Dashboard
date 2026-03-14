@@ -10,9 +10,8 @@ interface IndicatorTableProps {
 // Map indicators to reliable external chart URLs for user verification
 const SOURCE_URLS: Record<string, string> = {
   'MVRV Z-Score': 'https://en.macromicro.me/series/8365/bitcoin-mvrv-zscore',
-  'Reserve Risk': 'https://www.lookintobitcoin.com/charts/reserve-risk/',
-  'STH-SOPR': 'https://www.lookintobitcoin.com/charts/short-term-holder-sopr/',
   'Puell Multiple': 'https://en.macromicro.me/series/8112/bitcoin-puell-multiple',
+  'NUPL': 'https://en.macromicro.me/series/45910/bitcoin-nupl',
   '200 Week MA': 'https://www.lookintobitcoin.com/charts/200-week-moving-average-heatmap/',
   'Funding Rate': 'https://en.macromicro.me/series/21739/bitcoin-perpetual-futures-funding-rate',
   'Fear & Greed': 'https://alternative.me/crypto/fear-and-greed-index/',
@@ -23,14 +22,6 @@ const INDICATOR_DETAILS: Record<string, { meaning: string; interpretation: strin
   'MVRV Z-Score': {
     meaning: '**시장 가치 대 실현 가치 비율 (Market Value to Realized Value)**\n\n비트코인의 "현재 가격(시장 가치)"이 "사람들이 구매한 평균 가격(실현 가치)" 대비 얼마나 고평가/저평가되었는지를 보여줍니다. 역사적으로 비트코인의 고점과 저점을 가장 정확하게 맞춘 지표 중 하나입니다.',
     interpretation: '- **0.1 이하 (초록색 구간)**: **"바닥(Bottom)"**. 시장이 극도로 저평가된 상태입니다. 역사적으로 최고의 매수 기회였습니다.\n- **1.0 이하**: **"저평가"**. 여전히 매수하기 좋은 구간입니다.\n- **3.0 ~ 7.0**: **"과열 진입"**. 가격이 급등하여 실현 가치를 크게 앞지른 상태입니다. 분할 매도를 고려해야 합니다.\n- **7.0 이상 (빨간색 구간)**: **"고점(Top)"**. 시장이 극도로 과열되었습니다. 역사적 사이클의 고점 부근입니다.'
-  },
-  'Reserve Risk': {
-    meaning: '**리저브 리스크 (Reserve Risk)**\n\n장기 보유자들의 **확신(Conviction) 대비 현재 가격 수준**을 보여줍니다. 장기 홀더들이 코인을 팔지 않고 버티는데도 가격이 낮을 때 바닥 신호를 포착합니다. 12년 이상의 역사 데이터를 기반으로 한 가장 신뢰도 높은 바닥 지표 중 하나입니다.',
-    interpretation: '- **0.002 이하 (초록색 구간)**: **"강력 매수 신호"**. 장기 보유자들이 팔지 않는데 가격이 낮은 상태로, 역사적으로 가장 좋은 매수 구간입니다.\n- **0.002 ~ 0.02**: **"중립"**. 상승장 초중반부 구간입니다.\n- **0.02 이상 (빨간색 구간)**: **"과열 / 매도 신호"**. 가격이 장기 보유자의 확신을 뛰어넘어 과열된 상태입니다.'
-  },
-  'STH-SOPR': {
-    meaning: '**단기 보유자 소비 출력 수익 비율 (Short-Term Holder SOPR)**\n\n155일 이내에 구매한 **단기 투자자들이 현재 코인을 팔 때 수익인지 손실인지**를 보여줍니다. 1.0이 손익분기점으로, 이 아래에서 반등하면 바닥 신호, 위에서 유지되면 상승 추세 확인입니다.',
-    interpretation: '- **1.0 미만 (손실 구간)**: **"단기 투자자 패닉 매도"**. 단기 보유자들이 손실을 보며 던지는 구간으로, 역사적으로 바닥 부근입니다.\n- **1.0 근처**: **"손익분기점"**. 중립 구간입니다.\n- **1.0 초과 (수익 구간)**: **"시장 강세"**. 단기 보유자들이 수익을 보며 거래하는 상승장 신호입니다.\n- **지속적으로 높은 수치**: 과열 신호로 조정 위험이 있습니다.'
   },
   'Puell Multiple': {
     meaning: '**푸엘 멀티플 (Puell Multiple)**\n\n**채굴자들의 수익성**을 나타냅니다. 채굴자들이 비트코인을 팔아서 얻는 수익이 지난 1년 평균 대비 얼마나 되는지를 봅니다. 채굴자가 항복(Capitulation)하는 시점이 보통 바닥입니다.',
