@@ -313,8 +313,8 @@ export default function App() {
               <h4 className="text-slate-400 text-sm font-bold mb-2">매수 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
                 <li>MVRV Z-Score: <span className="text-green-400 font-mono">0.1 이하</span></li>
+                <li>Reserve Risk: <span className="text-green-400 font-mono">0.002 이하</span></li>
                 <li>Puell Multiple: <span className="text-green-400 font-mono">0.5 이하</span></li>
-                <li>NUPL: <span className="text-green-400 font-mono">0 미만</span></li>
                 <li>가격이 <span className="text-green-400 font-mono">200주 MA</span> 도달 시</li>
                 <li>Funding Rate: <span className="text-green-400 font-mono">음수 유지</span></li>
               </ul>
@@ -323,8 +323,8 @@ export default function App() {
               <h4 className="text-slate-400 text-sm font-bold mb-2">매도 구간</h4>
               <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
                 <li>MVRV Z-Score: <span className="text-red-400 font-mono">7.0 초과</span></li>
+                <li>Reserve Risk: <span className="text-red-400 font-mono">0.02 초과</span></li>
                 <li>Puell Multiple: <span className="text-red-400 font-mono">4.0 초과</span></li>
-                <li>NUPL: <span className="text-red-400 font-mono">0.75 초과</span></li>
                 <li>Fear & Greed: <span className="text-red-400 font-mono">극단적 탐욕</span> (80 이상)</li>
                 <li>Funding Rate: <span className="text-red-400 font-mono">0.05% 이상 지속</span></li>
               </ul>

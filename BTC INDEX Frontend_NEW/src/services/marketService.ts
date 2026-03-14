@@ -61,8 +61,31 @@ const mapBackendToFrontend = (data: MarketData): ReportData => {
   };
 
   const indicators: Indicator[] = Object.keys(indicatorKeys).map(key => {
-    const item = onchain[key] as IndicatorBackendData;
-    const isMissing = item.value === null;
+    let item = onchain[key] as IndicatorBackendData | undefined;
+
+    // wma_ratio가 onchain에 없는 구버전 data.json 대응: market 섹션에서 폴백
+    if (!item && key === 'wma_ratio' && market.wma_ratio != null) {
+      item = {
+        value: market.wma_ratio,
+        score: 5,
+        weight: 0.10,
+        signal: market.wma_ratio > 2.5 ? 'SELL' : (market.wma_ratio < 1.1 ? 'BUY' : 'NEUTRAL')
+      };
+    }
+
+    // item이 없거나 indicator 형태가 아닌 경우(realized_cap 등) 방어 처리
+    if (!item || typeof item !== 'object' || !('score' in item)) {
+      return {
+        name: indicatorKeys[key],
+        weight: 0,
+        currentValue: 'N/A',
+        score: 5,
+        weightedScore: 0,
+        signal: 'NEUTRAL' as 'BUY' | 'NEUTRAL' | 'SELL'
+      };
+    }
+
+    const isMissing = item.value === null || item.value === undefined;
     let displayVal = isMissing ? "Loading..." : item.value!.toLocaleString(undefined, {
       maximumFractionDigits: (key === 'reserve_risk' ? 6 : (key === 'funding_rate' ? 4 : 2))
     });
@@ -73,13 +96,15 @@ const mapBackendToFrontend = (data: MarketData): ReportData => {
       displayVal = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%`;
     }
 
+    const weightPct = (item.weight ?? 0) * 100; // 0.25 → 25 (퍼센트 변환)
+
     return {
       name: indicatorKeys[key],
-      weight: item.weight,
+      weight: weightPct,
       currentValue: displayVal,
       score: item.score,
-      weightedScore: (item.score * item.weight) / 100,
-      signal: item.signal as 'BUY' | 'NEUTRAL' | 'SELL'
+      weightedScore: (item.score * weightPct) / 100,
+      signal: (item.signal ?? 'NEUTRAL') as 'BUY' | 'NEUTRAL' | 'SELL'
     };
   });
 

@@ -203,6 +203,7 @@ def save_data_json(today_row: Dict[str, Any], analyzer: OnchainAnalyzer) -> None
             "sth_sopr":        analysis["indicators"]["sth_sopr"],
             "puell_multiple":  analysis["indicators"]["puell_multiple"],
             "funding_rate":    analysis["indicators"]["funding_rate"],
+            "wma_ratio":       analysis["indicators"]["wma_ratio"],
             "realized_cap":    today_row.get("realized_cap"),
         }
     }

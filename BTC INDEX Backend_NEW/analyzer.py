@@ -151,7 +151,7 @@ class OnchainAnalyzer:
                 }
                 total_weighted_score += score * weight
             else:
-                indicator_scores[key] = {"value": None, "score": 5, "signal": "NEUTRAL"}
+                indicator_scores[key] = {"value": None, "score": 5, "weight": self.WEIGHTS.get(key, 0), "signal": "NEUTRAL"}
         
         total_score = round(total_weighted_score * 10, 1) # 0-100 scale
         
