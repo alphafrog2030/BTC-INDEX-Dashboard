@@ -29,6 +29,41 @@ class OnchainAnalyzer:
         # 200WMA Ratio 미리 계산
         if 'price' in self.df.columns and 'wma_200' in self.df.columns:
             self.df['wma_ratio'] = self.df['price'].astype(float) / self.df['wma_200'].astype(float)
+            
+        # MVRV Z-Score 60일 기울기 계산 (시뮬레이터용)
+        if 'mvrv_z' in self.df.columns:
+            # 60일 전과의 수치 차이를 기울기로 정의 (전처리용)
+            self.df['mvrv_slope'] = self.df['mvrv_z'].diff(60)
+
+    def export_historical_data(self) -> List[Dict[str, Any]]:
+        """
+        프론트엔드 시뮬레이터(Simulator.tsx)에서 바로 사용할 수 있는 
+        형식으로 전체 역사적 데이터를 가공하여 반환합니다.
+        """
+        export_df = self.df.copy().reset_index()
+        
+        # 필드명 매핑 (Backend -> Frontend Simulator)
+        # d: Date, p: Price, z: MVRV Z-Score, ma: 200MA Ratio, s: Slope
+        export_df = export_df.rename(columns={
+            'd': 'd',
+            'price': 'p',
+            'mvrv_z': 'z',
+            'wma_ratio': 'ma',
+            'mvrv_slope': 's'
+        })
+        
+        # 필요한 필드만 추출 및 결측치 처리
+        final_cols = ['d', 'p', 'z', 'ma', 's']
+        # 존재하지 않는 컬럼은 기본값으로 채움
+        for col in final_cols:
+            if col not in export_df.columns:
+                export_df[col] = 0.0
+                
+        # 날짜 포맷 변경
+        export_df['d'] = export_df['d'].dt.strftime('%Y-%m-%d')
+        
+        # JSON 직렬화 가능한 리스트로 변환 (NaN은 None으로 변환됨)
+        return export_df[final_cols].replace({np.nan: None}).to_dict(orient='records')
 
     def get_blended_percentile_score(self, indicator_key: str, current_val: float) -> int:
         """

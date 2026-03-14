@@ -1,7 +1,11 @@
 import { ReportData, Indicator } from '../types';
 
 // 깃허브 Raw Data 주소 (신규 백엔드 경로)
-const API_URL = "https://raw.githubusercontent.com/alphafrog2030/BTC-INDEX-Dashboard/main/BTC%20INDEX%20Backend_NEW/data/data.json";
+// GitHub Raw URL for the data.json file
+// Note: Space in "BTC INDEX Backend_NEW" must be encoded as "%20"
+const BASE_URL = "https://raw.githubusercontent.com/alphafrog2030/BTC-INDEX-Dashboard/main/BTC%20INDEX%20Backend_NEW/data";
+const API_URL = `${BASE_URL}/data.json`;
+const HISTORICAL_API_URL = `${BASE_URL}/historical_onchain.json`;
 
 interface IndicatorBackendData {
   value: number | null;
@@ -10,77 +14,128 @@ interface IndicatorBackendData {
   signal: 'BUY' | 'NEUTRAL' | 'SELL';
 }
 
+export interface MarketData {
+  total_score: number;
+  overall_signal: string;
+  market: {
+    current_price_usd: number;
+    wma_200_usd: number;
+    wma_ratio: number;
+  };
+  sentiment: {
+    value: number;
+    classification: string;
+  };
+  onchain: {
+    [key: string]: {
+      value: number | null;
+      score: number;
+      weight: number;
+      signal: string;
+    };
+  };
+  timestamp: string;
+}
+
+/**
+ * Maps backend data structure to frontend ReportData structure.
+ * This function encapsulates the transformation logic.
+ */
+const mapBackendToFrontend = (data: MarketData): ReportData => {
+  const market = data.market;
+  const onchain = data.onchain;
+  const sentiment = data.sentiment;
+
+  // 백엔드에서 전송된 0-100점 척도 점수와 신호
+  const bScore = data.total_score || 50;
+  const bSignal = data.overall_signal || 'NEUTRAL';
+
+  // 지표 매핑 최적화
+  const indicatorKeys: { [key: string]: string } = {
+    'mvrv_z_score': 'MVRV Z-Score',
+    'reserve_risk': 'Reserve Risk',
+    'sth_sopr': 'STH-SOPR',
+    'puell_multiple': 'Puell Multiple',
+    'funding_rate': 'Funding Rate',
+    'wma_ratio': '200 Week MA'
+  };
+
+  const indicators: Indicator[] = Object.keys(indicatorKeys).map(key => {
+    const item = onchain[key] as IndicatorBackendData;
+    const isMissing = item.value === null;
+    let displayVal = isMissing ? "Loading..." : item.value!.toLocaleString(undefined, {
+      maximumFractionDigits: (key === 'reserve_risk' ? 6 : (key === 'funding_rate' ? 4 : 2))
+    });
+
+    if (key === 'funding_rate' && !isMissing) displayVal = `${(item.value! * 100).toFixed(4)}%`;
+    if (key === 'wma_ratio' && !isMissing) {
+      const diff = (item.value! - 1) * 100;
+      displayVal = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%`;
+    }
+
+    return {
+      name: indicatorKeys[key],
+      weight: item.weight,
+      currentValue: displayVal,
+      score: item.score,
+      weightedScore: (item.score * item.weight) / 100,
+      signal: item.signal as 'BUY' | 'NEUTRAL' | 'SELL'
+    };
+  });
+
+  // Fear & Greed 추가 (점수엔 미포함이나 시각화용)
+  indicators.push({
+    name: 'Fear & Greed',
+    weight: 0,
+    currentValue: sentiment.value.toString(),
+    score: Math.round(sentiment.value / 10),
+    weightedScore: 0,
+    signal: sentiment.value >= 70 ? 'SELL' : (sentiment.value <= 30 ? 'BUY' : 'NEUTRAL')
+  });
+
+  return {
+    totalScore: bScore,
+    btcPrice: market.current_price_usd,
+    timestamp: new Date(data.timestamp).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+    interpretation: generateKoreanAnalysis(bScore, bSignal, indicators),
+    strategyText: "", // interpretation 필드에 통합됨
+    risksAndAdvice: "",
+    breakdownText: "",
+    indicators: indicators,
+    sources: ["BGeometrics", "Alternative.me", "Onchain Analyzer v2.0"]
+  };
+};
+
+/**
+ * Fetches the latest market report data from the backend
+ */
 export const fetchMarketData = async (): Promise<ReportData> => {
   try {
     const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-    const data = await response.json();
-    const market = data.market;
-    const onchain = data.onchain;
-    const sentiment = data.sentiment;
-
-    // 백엔드에서 전송된 0-100점 척도 점수와 신호
-    const bScore = data.total_score || 50;
-    const bSignal = data.overall_signal || 'NEUTRAL';
-
-    // 지표 매핑 최적화
-    const indicatorKeys: { [key: string]: string } = {
-      'mvrv_z_score': 'MVRV Z-Score',
-      'reserve_risk': 'Reserve Risk',
-      'sth_sopr': 'STH-SOPR',
-      'puell_multiple': 'Puell Multiple',
-      'funding_rate': 'Funding Rate',
-      'wma_ratio': '200 Week MA'
-    };
-
-    const indicators: Indicator[] = Object.keys(indicatorKeys).map(key => {
-      const item = onchain[key] as IndicatorBackendData;
-      const isMissing = item.value === null;
-      let displayVal = isMissing ? "Loading..." : item.value!.toLocaleString(undefined, {
-        maximumFractionDigits: (key === 'reserve_risk' ? 6 : (key === 'funding_rate' ? 4 : 2))
-      });
-
-      if (key === 'funding_rate' && !isMissing) displayVal = `${(item.value! * 100).toFixed(4)}%`;
-      if (key === 'wma_ratio' && !isMissing) {
-        const diff = (item.value! - 1) * 100;
-        displayVal = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%`;
-      }
-
-      return {
-        name: indicatorKeys[key],
-        weight: item.weight,
-        currentValue: displayVal,
-        score: item.score,
-        weightedScore: (item.score * item.weight) / 100,
-        signal: item.signal as 'BUY' | 'NEUTRAL' | 'SELL'
-      };
-    });
-
-    // Fear & Greed 추가 (점수엔 미포함이나 시각화용)
-    indicators.push({
-      name: 'Fear & Greed',
-      weight: 0,
-      currentValue: sentiment.value.toString(),
-      score: Math.round(sentiment.value / 10),
-      weightedScore: 0,
-      signal: sentiment.value >= 70 ? 'SELL' : (sentiment.value <= 30 ? 'BUY' : 'NEUTRAL')
-    });
-
-    return {
-      totalScore: bScore,
-      btcPrice: market.current_price_usd,
-      timestamp: new Date(data.timestamp).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
-      interpretation: generateKoreanAnalysis(bScore, bSignal, indicators),
-      strategyText: "", // interpretation 필드에 통합됨
-      risksAndAdvice: "",
-      breakdownText: "",
-      indicators: indicators,
-      sources: ["BGeometrics", "Alternative.me", "Onchain Analyzer v2.0"]
-    };
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data: MarketData = await response.json();
+    return mapBackendToFrontend(data);
   } catch (error) {
     console.error('Error fetching market data:', error);
     throw error;
+  }
+};
+
+/**
+ * Fetches the full historical on-chain data for the simulator
+ */
+export const fetchHistoricalData = async (): Promise<any[]> => {
+  try {
+    const response = await fetch(`${HISTORICAL_API_URL}?t=${new Date().getTime()}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching historical data:', error);
+    return []; // Return empty array on failure to prevent crash
   }
 };
 

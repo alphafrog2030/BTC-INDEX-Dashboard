@@ -144,13 +144,22 @@ def load_historical() -> List[Dict[str, Any]]:
         return json.load(f)
 
 
-def save_historical(data: List[Dict[str, Any]]) -> None:
-    """historical_onchain.json 저장."""
+def save_historical(historical: List[Dict[str, Any]], analyzer: Optional[OnchainAnalyzer] = None) -> None:
+    """
+    historical_onchain.json 파일 저장.
+    analyzer가 제공되면 시뮬레이터 호환 형식으로 가공하여 저장합니다.
+    """
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(HISTORICAL_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-    kb = os.path.getsize(HISTORICAL_FILE) / 1024
-    print(f"  💾 historical_onchain.json 저장 완료 ({kb:.1f} KB, 총 {len(data)}개 레코드)")
+    try:
+        data_to_save = historical
+        if analyzer:
+            data_to_save = analyzer.export_historical_data()
+            
+        with open(HISTORICAL_FILE, 'w', encoding="utf-8") as f:
+            json.dump(data_to_save, f, ensure_ascii=False, separators=(",", ":"))
+        print(f"  💾 {os.path.basename(HISTORICAL_FILE)} 저장 완료 ({os.path.getsize(HISTORICAL_FILE)/1024:.1f} KB, 총 {len(data_to_save)}개 레코드)")
+    except Exception as e:
+        print(f"  ❌ 역사적 데이터 저장 실패: {e}")
 
 
 def fetch_fng() -> Dict[str, Any]:
@@ -171,11 +180,10 @@ def fetch_fng() -> Dict[str, Any]:
     return {"value": 50, "classification": "Neutral"}
 
 
-def save_data_json(today_row: Dict[str, Any], historical: List[Dict[str, Any]]) -> None:
+def save_data_json(today_row: Dict[str, Any], analyzer: OnchainAnalyzer) -> None:
     """
     프론트엔드용 data.json 을 최신 값 및 분석 점수와 함께 저장합니다.
     """
-    analyzer = OnchainAnalyzer(historical)
     analysis = analyzer.analyze(today_row)
     sentiment = fetch_fng()
 
@@ -268,18 +276,14 @@ def main() -> None:
     today_row["wma_200"] = wma_200
     print(f"\n  📐 200WMA 계산 결과: {wma_200:,.2f}" if wma_200 else "\n  ⚠️ 200WMA: 데이터 부족 (None)")
 
-    # ── Step 4: historical_onchain.json 업데이트 ───────────────────────
-    if already_today:
-        historical[-1] = today_row
-        print(f"\n  ℹ️ 오늘({today}) 데이터가 이미 존재 — 마지막 행 갱신")
-    else:
-        historical.append(today_row)
-        print(f"\n  ✅ 오늘({today}) 행 append")
+    # analyzer 초기화 (저장 전에 계산 필드 반영을 위해)
+    analyzer = OnchainAnalyzer(historical)
 
-    save_historical(historical)
+    # ── Step 4: historical_onchain.json 업데이트 (가공 데이터 포함) ─────────
+    save_historical(historical, analyzer)
 
     # ── Step 5: data.json 업데이트 (분석 포함) ────────────────────────
-    save_data_json(today_row, historical)
+    save_data_json(today_row, analyzer)
 
     # ── Step 6: GitHub Push ────────────────────────────────────────────
     git_push()

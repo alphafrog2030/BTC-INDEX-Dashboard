@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchMarketData } from './services/marketService'; // Changed from geminiService
+import { fetchMarketData, fetchHistoricalData } from './services/marketService'; // Changed from geminiService
 import { ReportData, ViewMode } from './types';
 import { ScoreGauge } from './components/ScoreGauge';
 import { IndicatorTable } from './components/IndicatorTable';
@@ -36,6 +36,7 @@ const MOCK_DATA: ReportData = {
 
 export default function App() {
   const [report, setReport] = useState<ReportData | null>(null);
+  const [historicalData, setHistoricalData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>(ViewMode.DASHBOARD);
@@ -64,8 +65,12 @@ export default function App() {
     setError(null);
     try {
       // Use the new scraper service
-      const data = await fetchMarketData();
+      const [data, hist] = await Promise.all([
+        fetchMarketData(),
+        fetchHistoricalData()
+      ]);
       setReport(data);
+      setHistoricalData(hist);
       setLastUpdated(new Date());
     } catch (err: any) {
       console.error(err);
@@ -87,10 +92,11 @@ export default function App() {
         <div className="max-w-4xl mx-auto animate-fadeIn">
           <Simulator
             btcPriceUsd={currentReport.btcPrice || 60000}
+            historicalData={historicalData}
             currentIndicators={{
-              z: currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue !== '-' ? Number(currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue) : 1.8,
-              ma: 1.2, // Default fallback
-              s: 0.1 // Default fallback
+              z: Number(currentReport.indicators.find(i => i.name === 'MVRV Z-Score')?.currentValue.replace(/,/g, '')) || 1.8,
+              ma: Number(currentReport.indicators.find(i => i.name === '200 Week MA')?.currentValue.replace(/[+%]/g, '')) / 100 + 1 || 1.0,
+              s: 0.1 // Default fallback for slope
             }}
           />
         </div>
